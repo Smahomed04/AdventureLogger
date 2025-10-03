@@ -383,6 +383,7 @@ struct ExportDataView: View {
 }
 
 // MARK: - Share Sheet
+#if canImport(UIKit)
 import UIKit
 
 struct ShareSheet: UIViewControllerRepresentable {
@@ -394,6 +395,7 @@ struct ShareSheet: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
+#endif
 
 #Preview {
     SettingsView()

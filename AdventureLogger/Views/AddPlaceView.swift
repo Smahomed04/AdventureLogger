@@ -27,6 +27,7 @@ struct AddPlaceView: View {
     @State private var useCurrentLocation = false
     @State private var showingLocationError = false
     @State private var locationErrorMessage = ""
+    @State private var showingLocationSearch = false
 
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: -33.8688, longitude: 151.2093), // Sydney default
@@ -52,58 +53,65 @@ struct AddPlaceView: View {
                 }
 
                 Section(header: Text("Location")) {
-                    Toggle("Use Current Location", isOn: $useCurrentLocation)
-                        .onChange(of: useCurrentLocation) { newValue in
-                            if newValue {
-                                requestLocation()
+                    // Search for location button
+                    Button(action: {
+                        showingLocationSearch = true
+                    }) {
+                        HStack {
+                            Image(systemName: "magnifyingglass")
+                                .foregroundColor(.accentColor)
+                            Text(name.isEmpty ? "Search for a place" : "Change location")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            if latitude != 0.0 || longitude != 0.0 {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.green)
+                            } else {
+                                Image(systemName: "chevron.right")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
                         }
+                    }
 
-                    if !useCurrentLocation {
+                    // Or use current location
+                    Button(action: {
+                        requestLocation()
+                    }) {
                         HStack {
-                            Text("Latitude")
+                            Image(systemName: "location.fill")
+                                .foregroundColor(.accentColor)
+                            Text("Use Current Location")
+                                .foregroundColor(.primary)
                             Spacer()
-                            TextField("0.0", value: $latitude, format: .number)
-                                .keyboardType(.decimalPad)
-                                .multilineTextAlignment(.trailing)
                         }
+                    }
 
-                        HStack {
-                            Text("Longitude")
-                            Spacer()
-                            TextField("0.0", value: $longitude, format: .number)
-                                .keyboardType(.decimalPad)
-                                .multilineTextAlignment(.trailing)
-                        }
-                    } else {
-                        HStack {
-                            Text("Latitude")
-                            Spacer()
-                            Text("\(latitude, specifier: "%.6f")")
+                    // Show selected location details
+                    if latitude != 0.0 || longitude != 0.0 {
+                        VStack(alignment: .leading, spacing: 4) {
+                            if !address.isEmpty {
+                                Text(address)
+                                    .font(.subheadline)
+                                    .foregroundColor(.primary)
+                            }
+                            Text("Coordinates: \(latitude, specifier: "%.6f"), \(longitude, specifier: "%.6f")")
+                                .font(.caption)
                                 .foregroundColor(.secondary)
                         }
 
-                        HStack {
-                            Text("Longitude")
-                            Spacer()
-                            Text("\(longitude, specifier: "%.6f")")
-                                .foregroundColor(.secondary)
+                        // Map preview
+                        Map(coordinateRegion: $region, annotationItems: [MapLocation(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), name: name.isEmpty ? "New Place" : name)]) { location in
+                            MapMarker(coordinate: location.coordinate, tint: .red)
                         }
-                    }
-
-                    TextField("Address (Optional)", text: $address)
-
-                    // Map preview
-                    Map(coordinateRegion: $region, annotationItems: [MapLocation(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), name: name.isEmpty ? "New Place" : name)]) { location in
-                        MapMarker(coordinate: location.coordinate, tint: .red)
-                    }
-                    .frame(height: 200)
-                    .cornerRadius(8)
-                    .onChange(of: latitude) { newValue in
-                        updateRegion()
-                    }
-                    .onChange(of: longitude) { newValue in
-                        updateRegion()
+                        .frame(height: 200)
+                        .cornerRadius(8)
+                        .onChange(of: latitude) { newValue in
+                            updateRegion()
+                        }
+                        .onChange(of: longitude) { newValue in
+                            updateRegion()
+                        }
                     }
                 }
 
@@ -147,13 +155,37 @@ struct AddPlaceView: View {
                     Button("Save") {
                         savePlace()
                     }
-                    .disabled(name.isEmpty)
+                    .disabled(name.isEmpty || (latitude == 0.0 && longitude == 0.0))
                 }
             }
             .alert("Location Error", isPresented: $showingLocationError) {
                 Button("OK", role: .cancel) { }
             } message: {
                 Text(locationErrorMessage)
+            }
+            .sheet(isPresented: $showingLocationSearch) {
+                LocationSearchView { result in
+                    // Auto-fill the form with search result
+                    name = result.name
+                    latitude = result.latitude
+                    longitude = result.longitude
+                    address = result.address ?? ""
+
+                    // Auto-suggest category based on search result
+                    if let category = result.category?.lowercased() {
+                        if category.contains("restaurant") || category.contains("food") || category.contains("cafe") {
+                            self.category = "Restaurant"
+                        } else if category.contains("park") || category.contains("nature") {
+                            self.category = "Hike"
+                        } else if category.contains("beach") {
+                            self.category = "Beach"
+                        } else {
+                            self.category = "Activity"
+                        }
+                    }
+
+                    updateRegion()
+                }
             }
         }
     }
