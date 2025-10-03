@@ -11,32 +11,37 @@ import CoreData
 struct ContentView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @State private var selectedTab = 0
+    @State private var showingAddPlace = false
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            PlaceListView()
-                .tabItem {
-                    Label("Adventures", systemImage: "list.bullet")
+        ZStack(alignment: .bottom) {
+            // Main content area with bottom padding for tab bar
+            Group {
+                switch selectedTab {
+                case 0:
+                    PlaceListView()
+                case 1:
+                    PlacesMapView()
+                case 2:
+                    DiscoverView()
+                case 3:
+                    SettingsView()
+                default:
+                    PlaceListView()
                 }
-                .tag(0)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .padding(.bottom, 60) // Tab bar height
 
-            PlacesMapView()
-                .tabItem {
-                    Label("Map", systemImage: "map.fill")
-                }
-                .tag(1)
-
-            DiscoverView()
-                .tabItem {
-                    Label("Discover", systemImage: "magnifyingglass")
-                }
-                .tag(2)
-
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gear")
-                }
-                .tag(3)
+            // Custom Tab Bar - Always visible at bottom
+            VStack(spacing: 0) {
+                Spacer()
+                CustomTabBar(selectedTab: $selectedTab)
+            }
+            .edgesIgnoringSafeArea(.bottom)
+        }
+        .sheet(isPresented: $showingAddPlace) {
+            AddPlaceView()
         }
     }
 }
