@@ -6,6 +6,7 @@ import SwiftUI
 import CoreLocation
 import MapKit
 import Combine
+import CoreData
 
 struct AddPlaceView: View {
     @Environment(\.managedObjectContext) private var viewContext

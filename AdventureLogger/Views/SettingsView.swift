@@ -3,6 +3,7 @@
 //
 
 import SwiftUI
+import CoreData
 
 struct SettingsView: View {
     @AppStorage("defaultCategory") private var defaultCategory = "Activity"

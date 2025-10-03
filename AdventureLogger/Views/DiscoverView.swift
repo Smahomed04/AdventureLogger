@@ -4,6 +4,7 @@
 
 import SwiftUI
 import CoreLocation
+import CoreData
 
 struct DiscoverView: View {
     @Environment(\.managedObjectContext) private var viewContext
