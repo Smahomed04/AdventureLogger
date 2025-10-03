@@ -119,21 +119,31 @@ struct AddPlaceView: View {
                     Toggle("Already Visited", isOn: $isVisited)
 
                     if isVisited {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Rating")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                        VStack(alignment: .leading, spacing: 12) {
+                            HStack {
+                                Text("Rating")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
 
-                            HStack(spacing: 8) {
-                                ForEach(1...5, id: \.self) { ratingValue in
-                                    Button(action: {
-                                        rating = ratingValue
-                                    }) {
-                                        Image(systemName: ratingValue <= rating ? "star.fill" : "star")
-                                            .foregroundColor(ratingValue <= rating ? .yellow : .gray)
-                                            .font(.title3)
+                                Spacer()
+
+                                HStack(spacing: 4) {
+                                    ForEach(1...5, id: \.self) { star in
+                                        Image(systemName: star <= rating ? "star.fill" : "star")
+                                            .foregroundColor(star <= rating ? .yellow : .gray)
+                                            .font(.title2)
+                                            .onTapGesture {
+                                                rating = star
+                                            }
                                     }
                                 }
+                            }
+
+                            // Show rating text
+                            if rating > 0 {
+                                Text(ratingText)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
                             }
                         }
 
@@ -187,6 +197,17 @@ struct AddPlaceView: View {
                     updateRegion()
                 }
             }
+        }
+    }
+
+    private var ratingText: String {
+        switch rating {
+        case 1: return "Poor"
+        case 2: return "Fair"
+        case 3: return "Good"
+        case 4: return "Very Good"
+        case 5: return "Excellent"
+        default: return ""
         }
     }
 

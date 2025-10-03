@@ -110,20 +110,29 @@ struct PlaceDetailView: View {
 
                         if editedVisited {
                             VStack(alignment: .leading, spacing: 8) {
-                                Text("Rating")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                                HStack {
+                                    Text("Rating")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
 
-                                HStack(spacing: 8) {
-                                    ForEach(1...5, id: \.self) { rating in
-                                        Button(action: {
-                                            editedRating = rating
-                                        }) {
-                                            Image(systemName: rating <= editedRating ? "star.fill" : "star")
-                                                .foregroundColor(rating <= editedRating ? .yellow : .gray)
+                                    Spacer()
+
+                                    HStack(spacing: 4) {
+                                        ForEach(1...5, id: \.self) { star in
+                                            Image(systemName: star <= editedRating ? "star.fill" : "star")
+                                                .foregroundColor(star <= editedRating ? .yellow : .gray)
                                                 .font(.title2)
+                                                .onTapGesture {
+                                                    editedRating = star
+                                                }
                                         }
                                     }
+                                }
+
+                                if editedRating > 0 {
+                                    Text(ratingText(for: editedRating))
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
                                 }
                             }
                         }
@@ -311,6 +320,17 @@ struct PlaceDetailView: View {
         } catch {
             let nsError = error as NSError
             print("Error deleting place: \(nsError), \(nsError.userInfo)")
+        }
+    }
+
+    private func ratingText(for rating: Int) -> String {
+        switch rating {
+        case 1: return "Poor"
+        case 2: return "Fair"
+        case 3: return "Good"
+        case 4: return "Very Good"
+        case 5: return "Excellent"
+        default: return ""
         }
     }
 }
