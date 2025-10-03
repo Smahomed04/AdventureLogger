@@ -5,6 +5,7 @@
 import SwiftUI
 import MapKit
 import CoreLocation
+import Combine
 
 struct LocationSearchView: View {
     @Environment(\.dismiss) private var dismiss
@@ -165,6 +166,7 @@ struct LocationSearchResultRow: View {
 
 // MARK: - View Model
 
+@MainActor
 class LocationSearchViewModel: NSObject, ObservableObject {
     @Published var searchResults: [SearchResult] = []
     @Published var isSearching = false
@@ -194,7 +196,6 @@ class LocationSearchViewModel: NSObject, ObservableObject {
         }
     }
 
-    @MainActor
     private func performSearch(query: String) async {
         isSearching = true
 
