@@ -5,7 +5,6 @@
 import SwiftUI
 import MapKit
 import CoreData
-import UIKit
 
 struct PlacesMapView: View {
     @Environment(\.managedObjectContext) private var viewContext
@@ -23,171 +22,97 @@ struct PlacesMapView: View {
     @State private var showingPlaceDetail = false
     @State private var trackUserLocation = false
     @State private var mapType: MKMapType = .standard
-    @State private var showVisitedOnly = false
-    @State private var selectedCategory = "All"
-
-    let categories = ["All", "Beach", "Hike", "Activity", "Restaurant", "Other"]
-
-    var filteredPlaces: [Place] {
-        var filtered = Array(places)
-
-        if showVisitedOnly {
-            filtered = filtered.filter { $0.isVisited }
-        }
-
-        if selectedCategory != "All" {
-            filtered = filtered.filter { $0.category == selectedCategory }
-        }
-
-        return filtered
-    }
 
     var body: some View {
-        NavigationView {
-            ZStack(alignment: .bottom) {
-                Map(coordinateRegion: $region,
-                    showsUserLocation: trackUserLocation,
-                    annotationItems: filteredPlaces) { place in
-                    MapAnnotation(coordinate: CLLocationCoordinate2D(
-                        latitude: place.latitude,
-                        longitude: place.longitude
-                    )) {
-                        PlaceAnnotation(place: place) {
-                            selectedPlace = place
-                            showingPlaceDetail = true
-                        }
+        ZStack(alignment: .bottom) {
+            Map(coordinateRegion: $region,
+                showsUserLocation: trackUserLocation,
+                annotationItems: Array(places)) { place in
+                MapAnnotation(coordinate: CLLocationCoordinate2D(
+                    latitude: place.latitude,
+                    longitude: place.longitude
+                )) {
+                    PlaceAnnotation(place: place) {
+                        selectedPlace = place
+                        showingPlaceDetail = true
                     }
                 }
-                .ignoresSafeArea(edges: .bottom)
+            }
+            .ignoresSafeArea(edges: .top)
 
-                // Controls overlay
-                VStack {
-                    HStack {
-                        Spacer()
-
-                        VStack(spacing: 12) {
-                            // Center on user location
-                            Button(action: centerOnUserLocation) {
-                                Image(systemName: trackUserLocation ? "location.fill" : "location")
-                                    .font(.title2)
-                                    .foregroundColor(trackUserLocation ? .blue : .primary)
-                                    .padding(12)
-                                    .background(Color(white: 1.0))
-                                    .clipShape(Circle())
-                                    .shadow(radius: 4)
-                            }
-
-                            // Show all places
-                            Button(action: showAllPlaces) {
-                                Image(systemName: "map.circle")
-                                    .font(.title2)
-                                    .foregroundColor(.primary)
-                                    .padding(12)
-                                    .background(Color(white: 1.0))
-                                    .clipShape(Circle())
-                                    .shadow(radius: 4)
-                            }
-
-                            // Filter visited only
-                            Button(action: { showVisitedOnly.toggle() }) {
-                                Image(systemName: showVisitedOnly ? "checkmark.circle.fill" : "checkmark.circle")
-                                    .font(.title2)
-                                    .foregroundColor(showVisitedOnly ? .green : .primary)
-                                    .padding(12)
-                                    .background(Color(white: 1.0))
-                                    .clipShape(Circle())
-                                    .shadow(radius: 4)
-                            }
-                        }
-                        .padding(.trailing)
-                    }
-                    .padding(.top, 8)
-
+            // Controls overlay
+            VStack {
+                HStack {
                     Spacer()
 
-                    // Info banner at bottom
                     VStack(spacing: 12) {
-                        // Category filter
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 8) {
-                                ForEach(categories, id: \.self) { category in
-                                    Button(action: { selectedCategory = category }) {
-                                        Text(category)
-                                            .font(.subheadline)
-                                            .fontWeight(selectedCategory == category ? .semibold : .regular)
-                                            .padding(.horizontal, 12)
-                                            .padding(.vertical, 6)
-                                            .background(selectedCategory == category ? Color.accentColor : Color(white: 1.0))
-                                            .foregroundColor(selectedCategory == category ? .white : .primary)
-                                            .cornerRadius(16)
-                                            .shadow(radius: 2)
-                                    }
-                                }
-                            }
-                            .padding(.horizontal)
+                        // Map type selector
+                        Button(action: toggleMapType) {
+                            Image(systemName: "map")
+                                .font(.title2)
+                                .foregroundColor(.primary)
+                                .padding(12)
+                                .background(Color(white: 1.0))
+                                .clipShape(Circle())
+                                .shadow(radius: 4)
                         }
 
-                        // Place count info
-                        HStack(spacing: 16) {
-                            Label("\(filteredPlaces.count)", systemImage: "mappin.and.ellipse")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-
-                            if filteredPlaces.filter({ $0.isVisited }).count > 0 {
-                                Label("\(filteredPlaces.filter { $0.isVisited }.count) visited", systemImage: "checkmark.circle.fill")
-                                    .font(.subheadline)
-                                    .foregroundColor(.green)
-                            }
-
-                            Spacer()
-
-                            if selectedPlace != nil {
-                                Text("Tap marker for details")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
+                        // Center on user location
+                        Button(action: centerOnUserLocation) {
+                            Image(systemName: "location.fill")
+                                .font(.title2)
+                                .foregroundColor(.primary)
+                                .padding(12)
+                                .background(Color(white: 1.0))
+                                .clipShape(Circle())
+                                .shadow(radius: 4)
                         }
-                        .padding(.horizontal)
-                        .padding(.vertical, 12)
-                        .background(Color(white: 1.0).opacity(0.95))
+
+                        // Show all places
+                        Button(action: showAllPlaces) {
+                            Image(systemName: "map.circle")
+                                .font(.title2)
+                                .foregroundColor(.primary)
+                                .padding(12)
+                                .background(Color(white: 1.0))
+                                .clipShape(Circle())
+                                .shadow(radius: 4)
+                        }
                     }
-                    .background(Color(white: 1.0).opacity(0.95))
-                    .cornerRadius(16, corners: [.topLeft, .topRight])
-                    .shadow(radius: 8)
+                    .padding(.trailing)
+                }
+                .padding(.top, 60)
+
+                Spacer()
+
+                // Place count badge
+                if !places.isEmpty {
+                    HStack {
+                        Image(systemName: "mappin.and.ellipse")
+                            .foregroundColor(.white)
+                        Text("\(places.count) place\(places.count == 1 ? "" : "s")")
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.white)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color.accentColor)
+                    .cornerRadius(20)
+                    .shadow(radius: 4)
+                    .padding(.bottom, 20)
                 }
             }
-            .navigationTitle("Map")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu {
-                        Button(action: { showVisitedOnly.toggle() }) {
-                            Label(showVisitedOnly ? "Show All" : "Visited Only",
-                                  systemImage: showVisitedOnly ? "eye" : "checkmark.circle")
-                        }
-
-                        Divider()
-
-                        ForEach(categories, id: \.self) { category in
-                            Button(action: { selectedCategory = category }) {
-                                Label(category, systemImage: selectedCategory == category ? "checkmark" : "")
-                            }
-                        }
-                    } label: {
-                        Image(systemName: "line.3.horizontal.decrease.circle")
-                    }
+        }
+        .sheet(isPresented: $showingPlaceDetail) {
+            if let place = selectedPlace {
+                NavigationView {
+                    PlaceDetailView(place: place)
                 }
             }
-            .sheet(isPresented: $showingPlaceDetail) {
-                if let place = selectedPlace {
-                    NavigationView {
-                        PlaceDetailView(place: place)
-                    }
-                }
-            }
-            .onAppear {
-                showAllPlaces()
-            }
+        }
+        .onAppear {
+            showAllPlaces()
         }
     }
 
@@ -215,14 +140,14 @@ struct PlacesMapView: View {
     }
 
     private func showAllPlaces() {
-        guard !filteredPlaces.isEmpty else { return }
+        guard !places.isEmpty else { return }
 
-        var minLat = filteredPlaces.first!.latitude
-        var maxLat = filteredPlaces.first!.latitude
-        var minLon = filteredPlaces.first!.longitude
-        var maxLon = filteredPlaces.first!.longitude
+        var minLat = places.first!.latitude
+        var maxLat = places.first!.latitude
+        var minLon = places.first!.longitude
+        var maxLon = places.first!.longitude
 
-        for place in filteredPlaces {
+        for place in places {
             minLat = min(minLat, place.latitude)
             maxLat = max(maxLat, place.latitude)
             minLon = min(minLon, place.longitude)
@@ -295,27 +220,6 @@ struct PlaceAnnotation: View {
         case "Restaurant": return .red
         default: return .purple
         }
-    }
-}
-
-// Extension for custom corner radius
-extension View {
-    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
-        clipShape(RoundedCorner(radius: radius, corners: corners))
-    }
-}
-
-struct RoundedCorner: Shape {
-    var radius: CGFloat = .infinity
-    var corners: UIRectCorner = .allCorners
-
-    func path(in rect: CGRect) -> Path {
-        let path = UIBezierPath(
-            roundedRect: rect,
-            byRoundingCorners: corners,
-            cornerRadii: CGSize(width: radius, height: radius)
-        )
-        return Path(path.cgPath)
     }
 }
 
