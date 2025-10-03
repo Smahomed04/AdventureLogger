@@ -14,15 +14,36 @@ struct PersistenceController {
     static let preview: PersistenceController = {
         let result = PersistenceController(inMemory: true)
         let viewContext = result.container.viewContext
-        for _ in 0..<10 {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
+
+        // Sample data for preview
+        let samplePlaces = [
+            ("Bondi Beach", "Beach", -33.8908, 151.2743, "Beautiful coastal beach"),
+            ("Blue Mountains", "Hike", -33.7320, 150.3114, "Stunning mountain trails"),
+            ("Sydney Opera House", "Activity", -33.8568, 151.2153, "Iconic landmark"),
+            ("Manly Beach", "Beach", -33.7969, 151.2871, "Perfect for surfing"),
+            ("Royal National Park", "Hike", -34.1341, 151.0531, "Coastal walking tracks")
+        ]
+
+        for (name, category, lat, lon, desc) in samplePlaces {
+            let newPlace = Place(context: viewContext)
+            newPlace.id = UUID()
+            newPlace.name = name
+            newPlace.category = category
+            newPlace.latitude = lat
+            newPlace.longitude = lon
+            newPlace.placeDescription = desc
+            newPlace.isVisited = Bool.random()
+            newPlace.createdAt = Date()
+            newPlace.updatedAt = Date()
+            if newPlace.isVisited {
+                newPlace.visitedDate = Date()
+                newPlace.rating = Int16.random(in: 1...5)
+            }
         }
+
         do {
             try viewContext.save()
         } catch {
-            // Replace this implementation with code to handle the error appropriately.
-            // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
             let nsError = error as NSError
             fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
         }

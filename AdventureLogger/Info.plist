@@ -6,5 +6,9 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>AdventureLogger needs your location to discover nearby places and add them to your adventure list.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>AdventureLogger uses your location to help you discover and track places you visit.</string>
 </dict>
 </plist>
