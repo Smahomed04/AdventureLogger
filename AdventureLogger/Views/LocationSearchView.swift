@@ -45,13 +45,20 @@ struct LocationSearchView: View {
                         Image(systemName: "map.fill")
                             .font(.system(size: 50))
                             .foregroundColor(.accentColor)
-                        Text("Search for a Place")
-                            .font(.headline)
-                        Text("Enter a place name, address, or landmark")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
+                        Text("Smart Location Search")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+
+                        VStack(alignment: .leading, spacing: 12) {
+                            SearchTip(icon: "mappin.circle", text: "Full names: 'Bondi Beach', 'Eiffel Tower'")
+                            SearchTip(icon: "text.word.spacing", text: "Keywords: 'blue beach', 'tall tower'")
+                            SearchTip(icon: "fork.knife", text: "Types: 'italian restaurant', 'coffee shop'")
+                            SearchTip(icon: "location", text: "Areas: 'restaurant downtown', 'park near me'")
+                        }
+                        .padding()
+                        .background(Color(.systemGray6))
+                        .cornerRadius(12)
+                        .padding(.horizontal)
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
@@ -66,7 +73,7 @@ struct LocationSearchView: View {
             }
             .navigationTitle("Search Location")
             .navigationBarTitleDisplayMode(.inline)
-            .searchable(text: $searchText, prompt: "Search places, addresses...")
+            .searchable(text: $searchText, prompt: "Try: 'blue beach', 'italian restaurant', 'opera house'...")
             .onChange(of: searchText) { newValue in
                 viewModel.search(query: newValue)
             }
@@ -77,6 +84,22 @@ struct LocationSearchView: View {
                     }
                 }
             }
+        }
+    }
+}
+
+struct SearchTip: View {
+    let icon: String
+    let text: String
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .foregroundColor(.accentColor)
+                .frame(width: 24)
+            Text(text)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
         }
     }
 }
@@ -199,8 +222,59 @@ class LocationSearchViewModel: NSObject, ObservableObject {
     private func performSearch(query: String) async {
         isSearching = true
 
+        // Split query into keywords for better matching
+        let keywords = query.lowercased().split(separator: " ").map(String.init)
+
+        // Create multiple search requests for better results
+        var allResults: [SearchResult] = []
+
+        // 1. Direct search with full query
+        await performSingleSearch(query: query, results: &allResults)
+
+        // 2. If query has multiple words, try searching each word
+        if keywords.count > 1 {
+            for keyword in keywords {
+                if keyword.count >= 3 { // Only search meaningful words
+                    await performSingleSearch(query: keyword, results: &allResults)
+                }
+            }
+        }
+
+        // 3. Try common place type keywords
+        let placeTypes = ["restaurant", "cafe", "beach", "park", "museum", "hotel", "bar", "shop", "mall"]
+        for placeType in placeTypes {
+            if keywords.contains(where: { $0.contains(placeType) || placeType.contains($0) }) {
+                let searchQuery = keywords.filter { !placeTypes.contains($0) }.joined(separator: " ")
+                if !searchQuery.isEmpty {
+                    await performSingleSearch(query: "\(searchQuery) \(placeType)", results: &allResults)
+                }
+            }
+        }
+
+        // Remove duplicates based on location proximity
+        let uniqueResults = removeDuplicates(from: allResults)
+
+        // Sort by relevance and distance
+        searchResults = uniqueResults.sorted { result1, result2 in
+            // Prioritize exact matches
+            let query1Match = result1.name.lowercased().contains(query.lowercased())
+            let query2Match = result2.name.lowercased().contains(query.lowercased())
+
+            if query1Match != query2Match {
+                return query1Match
+            }
+
+            // Then sort by distance
+            return (result1.distance ?? Double.infinity) < (result2.distance ?? Double.infinity)
+        }
+
+        isSearching = false
+    }
+
+    private func performSingleSearch(query: String, results: inout [SearchResult]) async {
         let request = MKLocalSearch.Request()
         request.naturalLanguageQuery = query
+        request.resultTypes = [.pointOfInterest, .address]
 
         // Set search region based on user location
         if let userLocation = userLocation {
@@ -215,11 +289,9 @@ class LocationSearchViewModel: NSObject, ObservableObject {
 
         do {
             let response = try await search.start()
-
-            // Check if task was cancelled
             guard !Task.isCancelled else { return }
 
-            let results = response.mapItems.map { item -> SearchResult in
+            let newResults = response.mapItems.map { item -> SearchResult in
                 let distance = userLocation?.distance(from: CLLocation(
                     latitude: item.placemark.coordinate.latitude,
                     longitude: item.placemark.coordinate.longitude
@@ -235,15 +307,29 @@ class LocationSearchViewModel: NSObject, ObservableObject {
                 )
             }
 
-            searchResults = results
-            isSearching = false
+            results.append(contentsOf: newResults)
         } catch {
-            if !Task.isCancelled {
-                print("Search error: \(error.localizedDescription)")
-                searchResults = []
-                isSearching = false
+            // Silently handle errors for individual searches
+        }
+    }
+
+    private func removeDuplicates(from results: [SearchResult]) -> [SearchResult] {
+        var uniqueResults: [SearchResult] = []
+
+        for result in results {
+            // Check if this location is already in results (within 50 meters)
+            let isDuplicate = uniqueResults.contains { existing in
+                let location1 = CLLocation(latitude: result.latitude, longitude: result.longitude)
+                let location2 = CLLocation(latitude: existing.latitude, longitude: existing.longitude)
+                return location1.distance(from: location2) < 50
+            }
+
+            if !isDuplicate {
+                uniqueResults.append(result)
             }
         }
+
+        return uniqueResults
     }
 
     private func formatAddress(from placemark: MKPlacemark) -> String {
