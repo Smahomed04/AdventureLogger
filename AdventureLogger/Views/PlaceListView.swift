@@ -19,6 +19,7 @@ struct PlaceListView: View {
     @State private var showingAddPlace = false
     @State private var searchText = ""
     @State private var selectedCategory = "All"
+    @State private var refreshID = UUID()
 
     let categories = ["All", "Beach", "Hike", "Activity", "Restaurant", "Other"]
 
@@ -73,13 +74,24 @@ struct PlaceListView: View {
                 } else {
                     List {
                         ForEach(filteredPlaces, id: \.id) { place in
-                            NavigationLink(destination: PlaceDetailView(place: place)) {
+                            NavigationLink(destination:
+                                PlaceDetailView(place: place)
+                                    .onDisappear {
+                                        // Force UI refresh when returning from detail view
+                                        refreshID = UUID()
+                                    }
+                            ) {
                                 PlaceRowView(place: place)
+                                    .id(refreshID)
                             }
                         }
                         .onDelete(perform: deletePlaces)
                     }
                     .listStyle(PlainListStyle())
+                    .refreshable {
+                        // Pull to refresh
+                        refreshID = UUID()
+                    }
                 }
             }
             .navigationTitle("My Adventures")
@@ -117,7 +129,7 @@ struct PlaceListView: View {
 }
 
 struct PlaceRowView: View {
-    let place: Place
+    @ObservedObject var place: Place
 
     var body: some View {
         HStack(spacing: 12) {
