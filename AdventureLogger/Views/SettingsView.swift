@@ -249,9 +249,11 @@ struct ExportDataView: View {
                 }
             }
             .navigationTitle("Export Data")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .automatic) {
                     Button("Done") {
                         dismiss()
                     }
@@ -382,7 +384,6 @@ struct ExportDataView: View {
 }
 
 // MARK: - Share Sheet
-#if os(iOS)
 import UIKit
 
 struct ShareSheet: UIViewControllerRepresentable {
@@ -394,25 +395,6 @@ struct ShareSheet: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
-#else
-import AppKit
-
-struct ShareSheet: NSViewRepresentable {
-    let items: [Any]
-
-    func makeNSView(context: Context) -> NSView {
-        let view = NSView()
-        DispatchQueue.main.async {
-            guard let url = items.first as? URL else { return }
-            let picker = NSSharingServicePicker(items: [url])
-            picker.show(relativeTo: .zero, of: view, preferredEdge: .minY)
-        }
-        return view
-    }
-
-    func updateNSView(_ nsView: NSView, context: Context) {}
-}
-#endif
 
 #Preview {
     SettingsView()
