@@ -147,6 +147,24 @@ The project currently builds for macOS. Follow these steps to change it to iOS:
    - Select an iPhone or iPad simulator
    - Press **Cmd + R** to build and run
 
+### Swift Package Manager Setup
+
+**Add Kingfisher for Image Caching:**
+
+1. In Xcode, go to `File` → `Add Package Dependencies...`
+2. Paste URL: `https://github.com/onevcat/Kingfisher.git`
+3. Click **Add Package**
+4. Select version: `Up to Next Major` (7.0.0 < 8.0.0)
+5. Ensure **AdventureLogger** target is checked
+6. Click **Add Package**
+7. Uncomment the code in `Utilities/ImageCacheManager.swift` to enable functionality
+
+**Why Kingfisher?**
+- Image caching (memory + disk)
+- SwiftUI support with KFImage
+- Future-ready for photo features
+- 20K+ GitHub stars, battle-tested
+
 ### Google Places API Setup (Optional)
 
 The app includes mock data for development. To use real Google Places API:
@@ -250,11 +268,32 @@ xcodebuild -project AdventureLogger.xcodeproj -scheme AdventureLogger -sdk iphon
 
 ---
 
+## Swift Package Manager Implementation
+
+### Added: Kingfisher
+
+**Purpose**: Image downloading and caching library
+**Repository**: https://github.com/onevcat/Kingfisher
+**Version**: 7.x
+
+**Implementation Location**: `Utilities/ImageCacheManager.swift`
+
+**Features Prepared**:
+- Image memory and disk caching
+- CachedAsyncImage SwiftUI view
+- Cache clearing functionality
+- Cache size calculation
+- Ready for future photo features
+
+**To Enable**:
+1. Add package via Xcode (see Setup Instructions above)
+2. Uncomment import and implementation in ImageCacheManager.swift
+3. Use CachedAsyncImage in views instead of AsyncImage
+
 ## Future Enhancements
 
-1. **Swift Package Manager**:
-   - Add **Alamofire** for advanced networking
-   - Add **Kingfisher** for image caching and loading
+1. **Additional Swift Packages**:
+   - Add **Alamofire** for advanced networking (optional)
    - Add **SwiftLint** for code quality
 
 2. **Photo Support**:

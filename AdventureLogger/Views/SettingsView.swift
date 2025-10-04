@@ -115,6 +115,12 @@ struct SettingsView: View {
                         Label("Export Data", systemImage: "square.and.arrow.up")
                     }
 
+                    Button(action: {
+                        ImageCacheManager.shared.clearCache()
+                    }) {
+                        Label("Clear Image Cache", systemImage: "photo.on.rectangle.angled")
+                    }
+
                     Button(role: .destructive, action: { showingClearDataAlert = true }) {
                         Label("Clear All Data", systemImage: "trash")
                             .foregroundColor(.red)
