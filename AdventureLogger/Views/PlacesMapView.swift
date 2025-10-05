@@ -45,41 +45,21 @@ struct PlacesMapView: View {
                 HStack {
                     Spacer()
 
-                    VStack(spacing: 12) {
+                    VStack(spacing: 16) {
                         // Map type selector
-                        Button(action: toggleMapType) {
-                            Image(systemName: "map")
-                                .font(.title2)
-                                .foregroundColor(.primary)
-                                .padding(12)
-                                .background(Color(white: 1.0))
-                                .clipShape(Circle())
-                                .shadow(radius: 4)
-                        }
+                        MapControlButton(icon: "map", action: toggleMapType)
 
                         // Center on user location
-                        Button(action: centerOnUserLocation) {
-                            Image(systemName: "location.fill")
-                                .font(.title2)
-                                .foregroundColor(.primary)
-                                .padding(12)
-                                .background(Color(white: 1.0))
-                                .clipShape(Circle())
-                                .shadow(radius: 4)
-                        }
+                        MapControlButton(icon: "location.fill", gradient: LinearGradient(
+                            colors: [Color(hex: "4ECDC4"), Color(hex: "44A08D")],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ), action: centerOnUserLocation)
 
                         // Show all places
-                        Button(action: showAllPlaces) {
-                            Image(systemName: "map.circle")
-                                .font(.title2)
-                                .foregroundColor(.primary)
-                                .padding(12)
-                                .background(Color(white: 1.0))
-                                .clipShape(Circle())
-                                .shadow(radius: 4)
-                        }
+                        MapControlButton(icon: "map.circle", action: showAllPlaces)
                     }
-                    .padding(.trailing)
+                    .padding(.trailing, 20)
                 }
                 .padding(.top, 60)
 
@@ -87,20 +67,26 @@ struct PlacesMapView: View {
 
                 // Place count badge
                 if !places.isEmpty {
-                    HStack {
+                    HStack(spacing: 8) {
                         Image(systemName: "mappin.and.ellipse")
                             .foregroundColor(.white)
+                            .font(.system(size: 16, weight: .semibold))
                         Text("\(places.count) place\(places.count == 1 ? "" : "s")")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
+                            .font(.system(size: 15, weight: .bold, design: .rounded))
                             .foregroundColor(.white)
                     }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(Color.accentColor)
-                    .cornerRadius(20)
-                    .shadow(radius: 4)
-                    .padding(.bottom, 20)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
+                    .background(
+                        LinearGradient(
+                            colors: [Color.accentColor, Color.accentColor.opacity(0.8)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .cornerRadius(25)
+                    .shadow(color: Color.accentColor.opacity(0.4), radius: 10, x: 0, y: 5)
+                    .padding(.bottom, 30)
                 }
             }
         }
@@ -214,11 +200,38 @@ struct PlaceAnnotation: View {
 
     private var categoryColor: Color {
         switch place.category {
-        case "Beach": return .blue
-        case "Hike": return .green
-        case "Activity": return .orange
-        case "Restaurant": return .red
-        default: return .purple
+        case "Beach": return Color(hex: "4A90E2")
+        case "Hike": return Color(hex: "56AB2F")
+        case "Activity": return Color(hex: "FF6B6B")
+        case "Restaurant": return Color(hex: "E74C3C")
+        default: return Color(hex: "A855F7")
+        }
+    }
+}
+
+struct MapControlButton: View {
+    let icon: String
+    var gradient: LinearGradient? = nil
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            ZStack {
+                Circle()
+                    .fill(
+                        gradient ?? LinearGradient(
+                            colors: [Color.white, Color.white],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 50, height: 50)
+                    .shadow(color: Color.black.opacity(0.15), radius: 10, x: 0, y: 4)
+
+                Image(systemName: icon)
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(gradient != nil ? .white : .primary)
+            }
         }
     }
 }

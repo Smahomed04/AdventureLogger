@@ -39,7 +39,20 @@ struct AddPlaceView: View {
     var body: some View {
         NavigationView {
             Form {
-                Section(header: Text("Basic Information")) {
+                Section {
+                    // Gradient header inside form
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("New Adventure")
+                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                            .foregroundColor(.primary)
+                        Text("Add a place to your collection")
+                            .font(.system(size: 15, weight: .regular, design: .rounded))
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.vertical, 8)
+                }
+
+                Section(header: Text("Basic Information").font(.system(size: 14, weight: .semibold, design: .rounded))) {
                     TextField("Place Name", text: $name)
 
                     TextField("Description", text: $description, axis: .vertical)
@@ -52,7 +65,7 @@ struct AddPlaceView: View {
                     }
                 }
 
-                Section(header: Text("Location")) {
+                Section(header: Text("Location").font(.system(size: 14, weight: .semibold, design: .rounded))) {
                     // Search for location button
                     Button(action: {
                         showingLocationSearch = true
@@ -115,44 +128,48 @@ struct AddPlaceView: View {
                     }
                 }
 
-                Section(header: Text("Visit Status")) {
+                Section(header: Text("Visit Status").font(.system(size: 14, weight: .semibold, design: .rounded))) {
                     Toggle("Already Visited", isOn: $isVisited)
+                        .toggleStyle(SwitchToggleStyle(tint: .green))
 
                     if isVisited {
                         VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Text("Rating")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                            Text("Rating")
+                                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                                .foregroundColor(.secondary)
 
-                                Spacer()
-
-                                HStack(spacing: 4) {
-                                    ForEach(1...5, id: \.self) { star in
-                                        Image(systemName: star <= rating ? "star.fill" : "star")
-                                            .foregroundColor(star <= rating ? .yellow : .gray)
-                                            .font(.title2)
-                                            .onTapGesture {
+                            HStack(spacing: 8) {
+                                ForEach(1...5, id: \.self) { star in
+                                    Image(systemName: star <= rating ? "star.fill" : "star")
+                                        .foregroundColor(star <= rating ? .yellow : .gray)
+                                        .font(.system(size: 28))
+                                        .onTapGesture {
+                                            withAnimation(.spring(response: 0.3)) {
                                                 rating = star
                                             }
-                                    }
+                                        }
                                 }
                             }
 
-                            // Show rating text
                             if rating > 0 {
                                 Text(ratingText)
-                                    .font(.caption)
+                                    .font(.system(size: 13, weight: .medium, design: .rounded))
                                     .foregroundColor(.secondary)
                             }
                         }
 
-                        TextField("Personal Reflection", text: $personalReflection, axis: .vertical)
-                            .lineLimit(3...8)
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Personal Reflection")
+                                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                                .foregroundColor(.secondary)
+
+                            TextField("Share your thoughts...", text: $personalReflection, axis: .vertical)
+                                .lineLimit(3...8)
+                        }
                     }
                 }
             }
-            .navigationTitle("Add New Place")
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {

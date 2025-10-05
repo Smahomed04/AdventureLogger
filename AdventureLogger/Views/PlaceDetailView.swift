@@ -22,218 +22,283 @@ struct PlaceDetailView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                // Header with category badge
-                HStack {
-                    CategoryBadge(category: place.category ?? "Other")
-                    Spacer()
-                    if place.isVisited {
-                        HStack(spacing: 4) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.green)
-                            Text("Visited")
-                                .font(.subheadline)
-                                .foregroundColor(.green)
+            VStack(alignment: .leading, spacing: 0) {
+                // Gradient Header
+                ZStack(alignment: .bottomLeading) {
+                    // Background gradient
+                    CategoryGradient.forCategory(place.category ?? "Other")
+                        .frame(height: 180)
+                        .overlay(
+                            LinearGradient(
+                                colors: [Color.clear, Color.black.opacity(0.3)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+
+                    // Content overlay
+                    VStack(alignment: .leading, spacing: 12) {
+                        // Category badge
+                        HStack {
+                            HStack(spacing: 6) {
+                                Image(systemName: categoryIcon)
+                                    .font(.system(size: 12, weight: .semibold))
+                                Text(place.category ?? "Other")
+                                    .font(.system(size: 13, weight: .bold, design: .rounded))
+                            }
+                            .padding(.horizontal, 12)
+                            .padding(.vertical, 6)
+                            .background(Color.white.opacity(0.25))
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(20)
+
+                            Spacer()
+
+                            if place.isVisited {
+                                HStack(spacing: 4) {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .font(.system(size: 12, weight: .semibold))
+                                    Text("Visited")
+                                        .font(.system(size: 13, weight: .bold, design: .rounded))
+                                }
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color.green.opacity(0.25))
+                                .background(.ultraThinMaterial)
+                                .foregroundColor(.white)
+                                .cornerRadius(20)
+                            }
+                        }
+
+                        // Title
+                        if isEditing {
+                            TextField("Place Name", text: $editedName)
+                                .font(.system(size: 28, weight: .bold, design: .rounded))
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                        } else {
+                            Text(place.name ?? "Unknown Place")
+                                .font(.system(size: 32, weight: .bold, design: .rounded))
+                                .foregroundColor(.white)
+                                .shadow(color: Color.black.opacity(0.3), radius: 4, x: 0, y: 2)
                         }
                     }
-                }
-                .padding(.horizontal)
-                .padding(.top)
-
-                // Title
-                if isEditing {
-                    TextField("Place Name", text: $editedName)
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.horizontal)
-                } else {
-                    Text(place.name ?? "Unknown Place")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .padding(.horizontal)
+                    .padding(20)
                 }
 
-                // Map preview
-                MapPreview(
-                    latitude: place.latitude,
-                    longitude: place.longitude,
-                    placeName: place.name ?? "Place"
-                )
-                .frame(height: 200)
-                .cornerRadius(12)
-                .padding(.horizontal)
+                VStack(alignment: .leading, spacing: 20) {
+                    // Map preview card
+                    VStack(spacing: 0) {
+                        MapPreview(
+                            latitude: place.latitude,
+                            longitude: place.longitude,
+                            placeName: place.name ?? "Place"
+                        )
+                        .frame(height: 200)
 
-                // Address
-                if let address = place.address {
-                    HStack(spacing: 8) {
-                        Image(systemName: "mappin.and.ellipse")
-                            .foregroundColor(.red)
-                        Text(address)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+                        // Address in map card
+                        if let address = place.address {
+                            HStack(spacing: 10) {
+                                ZStack {
+                                    Circle()
+                                        .fill(Color.red.opacity(0.15))
+                                        .frame(width: 32, height: 32)
+                                    Image(systemName: "mappin.circle.fill")
+                                        .foregroundStyle(
+                                            LinearGradient(
+                                                colors: [Color.red, Color.red.opacity(0.8)],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
+                                        .font(.system(size: 16))
+                                }
+
+                                Text(address)
+                                    .font(.system(size: 14, weight: .medium, design: .rounded))
+                                    .foregroundColor(.primary)
+                                Spacer()
+                            }
+                            .padding(16)
+                            .background(Color.cardBackground)
+                        }
                     }
+                    .glassCard(cornerRadius: 16)
                     .padding(.horizontal)
-                }
+                    .padding(.top, 20)
 
-                Divider()
-                    .padding(.horizontal)
+                    // Description Card
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("Description", systemImage: "text.alignleft")
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                            .foregroundColor(.primary)
 
-                // Description Section
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Description")
-                        .font(.headline)
-
-                    if isEditing {
-                        TextField("Add a description...", text: $editedDescription, axis: .vertical)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .lineLimit(3...6)
-                    } else {
-                        Text(place.placeDescription ?? "No description")
-                            .font(.body)
-                            .foregroundColor(place.placeDescription == nil ? .secondary : .primary)
+                        if isEditing {
+                            TextField("Add a description...", text: $editedDescription, axis: .vertical)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .lineLimit(3...6)
+                        } else {
+                            Text(place.placeDescription ?? "No description added yet")
+                                .font(.system(size: 15, weight: .regular, design: .rounded))
+                                .foregroundColor(place.placeDescription == nil ? .secondary : .primary)
+                        }
                     }
-                }
-                .padding(.horizontal)
-
-                Divider()
+                    .padding(16)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .glassCard()
                     .padding(.horizontal)
 
-                // Visited Section
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Visit Status")
-                        .font(.headline)
+                    // Visit Status Card
+                    VStack(alignment: .leading, spacing: 16) {
+                        Label("Visit Status", systemImage: "checkmark.seal")
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                            .foregroundColor(.primary)
 
-                    if isEditing {
-                        Toggle("Visited", isOn: $editedVisited)
-                            .toggleStyle(SwitchToggleStyle(tint: .green))
+                        if isEditing {
+                            Toggle("Visited", isOn: $editedVisited)
+                                .toggleStyle(SwitchToggleStyle(tint: .green))
 
-                        if editedVisited {
-                            VStack(alignment: .leading, spacing: 8) {
-                                HStack {
+                            if editedVisited {
+                                VStack(alignment: .leading, spacing: 12) {
                                     Text("Rating")
-                                        .font(.subheadline)
+                                        .font(.system(size: 15, weight: .semibold, design: .rounded))
                                         .foregroundColor(.secondary)
 
-                                    Spacer()
-
-                                    HStack(spacing: 4) {
+                                    HStack(spacing: 8) {
                                         ForEach(1...5, id: \.self) { star in
                                             Image(systemName: star <= editedRating ? "star.fill" : "star")
                                                 .foregroundColor(star <= editedRating ? .yellow : .gray)
-                                                .font(.title2)
+                                                .font(.system(size: 28))
                                                 .onTapGesture {
-                                                    editedRating = star
+                                                    withAnimation(.spring(response: 0.3)) {
+                                                        editedRating = star
+                                                    }
                                                 }
                                         }
                                     }
-                                }
 
-                                if editedRating > 0 {
-                                    Text(ratingText(for: editedRating))
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                            }
-                        }
-                    } else {
-                        HStack {
-                            Image(systemName: place.isVisited ? "checkmark.circle.fill" : "circle")
-                                .foregroundColor(place.isVisited ? .green : .gray)
-                            Text(place.isVisited ? "Visited" : "Not visited yet")
-                                .font(.body)
-                        }
-
-                        if place.isVisited, let visitedDate = place.visitedDate {
-                            HStack {
-                                Image(systemName: "calendar")
-                                    .foregroundColor(.secondary)
-                                Text("Visited on \(visitedDate, formatter: dateFormatter)")
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-
-                        if place.isVisited && place.rating > 0 {
-                            HStack(spacing: 4) {
-                                ForEach(0..<Int(place.rating), id: \.self) { _ in
-                                    Image(systemName: "star.fill")
-                                        .foregroundColor(.yellow)
-                                }
-                                ForEach(Int(place.rating)..<5, id: \.self) { _ in
-                                    Image(systemName: "star")
-                                        .foregroundColor(.gray)
+                                    if editedRating > 0 {
+                                        Text(ratingText(for: editedRating))
+                                            .font(.system(size: 13, weight: .medium, design: .rounded))
+                                            .foregroundColor(.secondary)
+                                    }
                                 }
                             }
-                        }
-                    }
-                }
-                .padding(.horizontal)
-
-                Divider()
-                    .padding(.horizontal)
-
-                // Personal Reflection Section
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Personal Reflection")
-                        .font(.headline)
-
-                    if isEditing {
-                        TextEditor(text: $editedReflection)
-                            .frame(minHeight: 120)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color(.systemGray4), lineWidth: 1)
-                            )
-                    } else {
-                        if let reflection = place.personalReflection, !reflection.isEmpty {
-                            Text(reflection)
-                                .font(.body)
-                                .padding()
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(Color(.systemGray6))
-                                .cornerRadius(8)
                         } else {
-                            Text("No reflection added yet")
-                                .font(.body)
-                                .foregroundColor(.secondary)
-                                .italic()
+                            VStack(alignment: .leading, spacing: 12) {
+                                HStack(spacing: 10) {
+                                    ZStack {
+                                        Circle()
+                                            .fill(place.isVisited ? Color.green.opacity(0.15) : Color.gray.opacity(0.15))
+                                            .frame(width: 32, height: 32)
+                                        Image(systemName: place.isVisited ? "checkmark.circle.fill" : "circle")
+                                            .foregroundColor(place.isVisited ? .green : .gray)
+                                            .font(.system(size: 16))
+                                    }
+
+                                    Text(place.isVisited ? "Visited" : "Not visited yet")
+                                        .font(.system(size: 15, weight: .medium, design: .rounded))
+                                }
+
+                                if place.isVisited, let visitedDate = place.visitedDate {
+                                    HStack(spacing: 10) {
+                                        Image(systemName: "calendar")
+                                            .foregroundColor(.secondary)
+                                            .font(.system(size: 14))
+                                        Text("Visited on \(visitedDate, formatter: dateFormatter)")
+                                            .font(.system(size: 14, weight: .regular, design: .rounded))
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+
+                                if place.isVisited && place.rating > 0 {
+                                    HStack(spacing: 6) {
+                                        ForEach(0..<Int(place.rating), id: \.self) { _ in
+                                            Image(systemName: "star.fill")
+                                                .foregroundColor(.yellow)
+                                                .font(.system(size: 18))
+                                        }
+                                        ForEach(Int(place.rating)..<5, id: \.self) { _ in
+                                            Image(systemName: "star")
+                                                .foregroundColor(.gray.opacity(0.3))
+                                                .font(.system(size: 18))
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                }
-                .padding(.horizontal)
-
-                // Category editing
-                if isEditing {
-                    Divider()
-                        .padding(.horizontal)
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Category")
-                            .font(.headline)
-
-                        Picker("Category", selection: $editedCategory) {
-                            Text("Beach").tag("Beach")
-                            Text("Hike").tag("Hike")
-                            Text("Activity").tag("Activity")
-                            Text("Restaurant").tag("Restaurant")
-                            Text("Other").tag("Other")
-                        }
-                        .pickerStyle(SegmentedPickerStyle())
-                    }
+                    .padding(16)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .glassCard()
                     .padding(.horizontal)
-                }
 
-                // Metadata
-                VStack(alignment: .leading, spacing: 4) {
+                    // Personal Reflection Card
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("Personal Reflection", systemImage: "quote.bubble")
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                            .foregroundColor(.primary)
+
+                        if isEditing {
+                            TextEditor(text: $editedReflection)
+                                .frame(minHeight: 120)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color(.systemGray4), lineWidth: 1)
+                                )
+                        } else {
+                            if let reflection = place.personalReflection, !reflection.isEmpty {
+                                Text(reflection)
+                                    .font(.system(size: 15, weight: .regular, design: .rounded))
+                                    .foregroundColor(.primary)
+                            } else {
+                                Text("No reflection added yet")
+                                    .font(.system(size: 15, weight: .regular, design: .rounded))
+                                    .foregroundColor(.secondary)
+                                    .italic()
+                            }
+                        }
+                    }
+                    .padding(16)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .glassCard()
+                    .padding(.horizontal)
+
+                    // Category editing
+                    if isEditing {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Label("Category", systemImage: "tag")
+                                .font(.system(size: 18, weight: .bold, design: .rounded))
+                                .foregroundColor(.primary)
+
+                            Picker("Category", selection: $editedCategory) {
+                                Text("Beach").tag("Beach")
+                                Text("Hike").tag("Hike")
+                                Text("Activity").tag("Activity")
+                                Text("Restaurant").tag("Restaurant")
+                                Text("Other").tag("Other")
+                            }
+                            .pickerStyle(SegmentedPickerStyle())
+                        }
+                        .padding(16)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .glassCard()
+                        .padding(.horizontal)
+                    }
+
+                    // Metadata
                     if let createdAt = place.createdAt {
-                        Text("Added on \(createdAt, formatter: dateFormatter)")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        HStack(spacing: 8) {
+                            Image(systemName: "clock")
+                                .font(.system(size: 12))
+                                .foregroundColor(.secondary)
+                            Text("Added on \(createdAt, formatter: dateFormatter)")
+                                .font(.system(size: 13, weight: .regular, design: .rounded))
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom, 20)
                     }
                 }
-                .padding(.horizontal)
-                .padding(.bottom)
             }
         }
         .navigationBarTitleDisplayMode(.inline)
@@ -331,6 +396,16 @@ struct PlaceDetailView: View {
         case 4: return "Very Good"
         case 5: return "Excellent"
         default: return ""
+        }
+    }
+
+    private var categoryIcon: String {
+        switch place.category {
+        case "Beach": return "beach.umbrella.fill"
+        case "Hike": return "figure.hiking"
+        case "Activity": return "sportscourt.fill"
+        case "Restaurant": return "fork.knife"
+        default: return "mappin.circle.fill"
         }
     }
 }

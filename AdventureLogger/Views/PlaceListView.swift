@@ -72,22 +72,26 @@ struct PlaceListView: View {
                             "No places found matching '\(searchText)'"
                     )
                 } else {
-                    List {
-                        ForEach(filteredPlaces, id: \.id) { place in
-                            NavigationLink(destination:
-                                PlaceDetailView(place: place)
-                                    .onDisappear {
-                                        // Force UI refresh when returning from detail view
-                                        refreshID = UUID()
-                                    }
-                            ) {
-                                PlaceRowView(place: place)
-                                    .id(refreshID)
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            ForEach(filteredPlaces, id: \.id) { place in
+                                NavigationLink(destination:
+                                    PlaceDetailView(place: place)
+                                        .onDisappear {
+                                            // Force UI refresh when returning from detail view
+                                            refreshID = UUID()
+                                        }
+                                ) {
+                                    PlaceRowView(place: place)
+                                        .id(refreshID)
+                                }
+                                .buttonStyle(PlainButtonStyle())
                             }
                         }
-                        .onDelete(perform: deletePlaces)
+                        .padding(.horizontal)
+                        .padding(.top, 12)
+                        .padding(.bottom, 20)
                     }
-                    .listStyle(PlainListStyle())
                     .refreshable {
                         // Pull to refresh
                         refreshID = UUID()
@@ -130,50 +134,75 @@ struct PlaceListView: View {
 
 struct PlaceRowView: View {
     @ObservedObject var place: Place
+    @State private var isPressed = false
 
     var body: some View {
-        HStack(spacing: 12) {
-            // Category icon
+        HStack(spacing: 16) {
+            // Gradient icon with shadow
             ZStack {
-                Circle()
-                    .fill(categoryColor.opacity(0.2))
-                    .frame(width: 50, height: 50)
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(categoryGradient)
+                    .frame(width: 60, height: 60)
+                    .shadow(color: categoryColor.opacity(0.4), radius: 8, x: 0, y: 4)
 
                 Image(systemName: categoryIcon)
-                    .foregroundColor(categoryColor)
-                    .font(.system(size: 22))
+                    .foregroundColor(.white)
+                    .font(.system(size: 24, weight: .semibold))
             }
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 6) {
                 Text(place.name ?? "Unknown")
-                    .font(.headline)
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .foregroundColor(.primary)
 
                 if let description = place.placeDescription {
                     Text(description)
-                        .font(.subheadline)
+                        .font(.system(size: 14, weight: .regular, design: .rounded))
                         .foregroundColor(.secondary)
                         .lineLimit(1)
                 }
 
+                // Tags row
                 HStack(spacing: 8) {
-                    Label(place.category ?? "Other", systemImage: "tag.fill")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    // Category badge
+                    HStack(spacing: 4) {
+                        Image(systemName: "tag.fill")
+                            .font(.system(size: 10))
+                        Text(place.category ?? "Other")
+                            .font(.system(size: 11, weight: .medium, design: .rounded))
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(categoryColor.opacity(0.15))
+                    .foregroundColor(categoryColor)
+                    .cornerRadius(8)
 
                     if place.isVisited {
-                        Label("Visited", systemImage: "checkmark.circle.fill")
-                            .font(.caption)
-                            .foregroundColor(.green)
+                        HStack(spacing: 4) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 10))
+                            Text("Visited")
+                                .font(.system(size: 11, weight: .medium, design: .rounded))
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.green.opacity(0.15))
+                        .foregroundColor(.green)
+                        .cornerRadius(8)
                     }
 
                     if place.isVisited, place.rating > 0 {
                         HStack(spacing: 2) {
                             ForEach(0..<Int(place.rating), id: \.self) { _ in
                                 Image(systemName: "star.fill")
-                                    .font(.caption2)
+                                    .font(.system(size: 10))
                                     .foregroundColor(.yellow)
                             }
                         }
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 4)
+                        .background(Color.yellow.opacity(0.15))
+                        .cornerRadius(8)
                     }
                 }
             }
@@ -181,10 +210,17 @@ struct PlaceRowView: View {
             Spacer()
 
             Image(systemName: "chevron.right")
-                .font(.caption)
-                .foregroundColor(.secondary)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundColor(.secondary.opacity(0.5))
         }
-        .padding(.vertical, 8)
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.cardBackground)
+                .shadow(color: Color.black.opacity(isPressed ? 0.05 : 0.1), radius: isPressed ? 4 : 8, x: 0, y: isPressed ? 2 : 4)
+        )
+        .scaleEffect(isPressed ? 0.98 : 1.0)
+        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
     }
 
     private var categoryIcon: String {
@@ -199,12 +235,16 @@ struct PlaceRowView: View {
 
     private var categoryColor: Color {
         switch place.category {
-        case "Beach": return .blue
-        case "Hike": return .green
-        case "Activity": return .orange
-        case "Restaurant": return .red
-        default: return .purple
+        case "Beach": return Color(hex: "4A90E2")
+        case "Hike": return Color(hex: "56AB2F")
+        case "Activity": return Color(hex: "FF6B6B")
+        case "Restaurant": return Color(hex: "E74C3C")
+        default: return Color(hex: "A855F7")
         }
+    }
+
+    private var categoryGradient: LinearGradient {
+        CategoryGradient.forCategory(place.category ?? "Other")
     }
 }
 
@@ -216,13 +256,54 @@ struct CategoryChip: View {
     var body: some View {
         Button(action: action) {
             Text(title)
-                .font(.subheadline)
-                .fontWeight(isSelected ? .semibold : .regular)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(isSelected ? Color.accentColor : Color(.systemGray5))
+                .font(.system(size: 14, weight: isSelected ? .bold : .semibold, design: .rounded))
+                .padding(.horizontal, 18)
+                .padding(.vertical, 10)
+                .background(
+                    Group {
+                        if isSelected {
+                            categoryGradient
+                        } else {
+                            LinearGradient(
+                                colors: [Color(.systemGray6), Color(.systemGray5)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        }
+                    }
+                )
                 .foregroundColor(isSelected ? .white : .primary)
                 .cornerRadius(20)
+                .shadow(color: isSelected ? categoryColor.opacity(0.3) : Color.clear, radius: 8, x: 0, y: 4)
+        }
+        .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
+    }
+
+    private var categoryGradient: LinearGradient {
+        switch title {
+        case "Beach":
+            return CategoryGradient.forCategory("Beach")
+        case "Hike":
+            return CategoryGradient.forCategory("Hike")
+        case "Activity":
+            return CategoryGradient.forCategory("Activity")
+        case "Restaurant":
+            return CategoryGradient.forCategory("Restaurant")
+        case "Other":
+            return CategoryGradient.forCategory("Other")
+        default:
+            return LinearGradient(colors: [Color.accentColor, Color.accentColor.opacity(0.8)], startPoint: .topLeading, endPoint: .bottomTrailing)
+        }
+    }
+
+    private var categoryColor: Color {
+        switch title {
+        case "Beach": return Color(hex: "4A90E2")
+        case "Hike": return Color(hex: "56AB2F")
+        case "Activity": return Color(hex: "FF6B6B")
+        case "Restaurant": return Color(hex: "E74C3C")
+        case "Other": return Color(hex: "A855F7")
+        default: return Color.accentColor
         }
     }
 }
@@ -233,20 +314,41 @@ struct EmptyStateView: View {
     let message: String
 
     var body: some View {
-        VStack(spacing: 16) {
-            Image(systemName: icon)
-                .font(.system(size: 60))
-                .foregroundColor(.secondary)
+        VStack(spacing: 24) {
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.accentColor.opacity(0.2), Color.accentColor.opacity(0.05)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .frame(width: 120, height: 120)
 
-            Text(title)
-                .font(.title2)
-                .fontWeight(.semibold)
+                Image(systemName: icon)
+                    .font(.system(size: 50, weight: .light))
+                    .foregroundStyle(
+                        LinearGradient(
+                            colors: [Color.accentColor, Color.accentColor.opacity(0.7)],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+            }
+            .pulse()
 
-            Text(message)
-                .font(.body)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
+            VStack(spacing: 8) {
+                Text(title)
+                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .foregroundColor(.primary)
+
+                Text(message)
+                    .font(.system(size: 16, weight: .regular, design: .rounded))
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

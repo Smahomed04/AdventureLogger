@@ -16,28 +16,29 @@ struct ContentView: View {
         TabView(selection: $selectedTab) {
             PlaceListView()
                 .tabItem {
-                    Label("Adventures", systemImage: "list.bullet")
+                    Label("Adventures", systemImage: selectedTab == 0 ? "list.bullet.circle.fill" : "list.bullet.circle")
                 }
                 .tag(0)
 
             PlacesMapView()
                 .tabItem {
-                    Label("Map", systemImage: "map.fill")
+                    Label("Map", systemImage: selectedTab == 1 ? "map.fill" : "map")
                 }
                 .tag(1)
 
             DiscoverView()
                 .tabItem {
-                    Label("Discover", systemImage: "magnifyingglass")
+                    Label("Discover", systemImage: selectedTab == 2 ? "sparkle.magnifyingglass" : "magnifyingglass")
                 }
                 .tag(2)
 
             SettingsView()
                 .tabItem {
-                    Label("Settings", systemImage: "gear")
+                    Label("Settings", systemImage: selectedTab == 3 ? "gearshape.fill" : "gearshape")
                 }
                 .tag(3)
         }
+        .accentColor(Color(hex: "FF6B6B"))
     }
 }
 

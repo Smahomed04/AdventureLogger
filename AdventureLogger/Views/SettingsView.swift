@@ -27,8 +27,21 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             Form {
+                // MARK: - Header
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Settings")
+                            .font(.system(size: 32, weight: .bold, design: .rounded))
+                            .foregroundColor(.primary)
+                        Text("Customize your adventure experience")
+                            .font(.system(size: 15, weight: .regular, design: .rounded))
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.vertical, 8)
+                }
+
                 // MARK: - General Settings
-                Section(header: Text("General")) {
+                Section(header: Text("General").font(.system(size: 14, weight: .semibold, design: .rounded))) {
                     Picker("Default Category", selection: $defaultCategory) {
                         ForEach(categories, id: \.self) { category in
                             Text(category).tag(category)
@@ -46,7 +59,7 @@ struct SettingsView: View {
                 }
 
                 // MARK: - Discovery Settings
-                Section(header: Text("Discovery"), footer: Text("Set the search radius for discovering nearby places")) {
+                Section(header: Text("Discovery").font(.system(size: 14, weight: .semibold, design: .rounded)), footer: Text("Set the search radius for discovering nearby places").font(.system(size: 12, weight: .regular, design: .rounded))) {
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Search Radius: \(String(format: "%.1f", searchRadius)) km")
                             .font(.subheadline)
@@ -62,14 +75,14 @@ struct SettingsView: View {
                 }
 
                 // MARK: - Cloud & Sync
-                Section(header: Text("iCloud & Sync"), footer: Text("Automatically sync your adventures across all your devices using iCloud")) {
+                Section(header: Text("iCloud & Sync").font(.system(size: 14, weight: .semibold, design: .rounded)), footer: Text("Automatically sync your adventures across all your devices using iCloud").font(.system(size: 12, weight: .regular, design: .rounded))) {
                     Toggle("Auto Sync with iCloud", isOn: $autoSyncCloudKit)
 
                     Toggle("Enable Notifications", isOn: $enableNotifications)
                 }
 
                 // MARK: - Statistics
-                Section(header: Text("Statistics")) {
+                Section(header: Text("Statistics").font(.system(size: 14, weight: .semibold, design: .rounded))) {
                     HStack {
                         Text("Total Places")
                         Spacer()
@@ -110,7 +123,7 @@ struct SettingsView: View {
                 }
 
                 // MARK: - Data Management
-                Section(header: Text("Data Management")) {
+                Section(header: Text("Data Management").font(.system(size: 14, weight: .semibold, design: .rounded))) {
                     Button(action: { showingExportSheet = true }) {
                         Label("Export Data", systemImage: "square.and.arrow.up")
                     }
@@ -128,7 +141,7 @@ struct SettingsView: View {
                 }
 
                 // MARK: - About
-                Section(header: Text("About")) {
+                Section(header: Text("About").font(.system(size: 14, weight: .semibold, design: .rounded))) {
                     HStack {
                         Text("Version")
                         Spacer()
@@ -155,7 +168,8 @@ struct SettingsView: View {
                     }
                 }
             }
-            .navigationTitle("Settings")
+            .navigationTitle("")
+            .navigationBarTitleDisplayMode(.inline)
             .alert("Clear All Data", isPresented: $showingClearDataAlert) {
                 Button("Cancel", role: .cancel) { }
                 Button("Clear", role: .destructive) {
