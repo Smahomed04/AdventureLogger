@@ -304,10 +304,8 @@ This project is created for educational purposes as part of an iOS Development c
 
 ## 👨‍💻 Author
 
-**Sa'd Mahomed**
+**Taahir Mahomed**
 - Created: October 2025
-- Project: Assessment Task 3 - iOS Application Development
-
 ---
 
 ## 🙏 Acknowledgments
