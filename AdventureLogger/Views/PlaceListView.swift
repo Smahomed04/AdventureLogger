@@ -21,7 +21,7 @@ struct PlaceListView: View {
     @State private var selectedCategory = "All"
     @State private var refreshID = UUID()
 
-    let categories = ["All", "Beach", "Hike", "Activity", "Restaurant", "Other"]
+    let categories = ["All", "Beach", "Hike", "Activity", "Restaurant", "Place of Worship", "Other"]
 
     var filteredPlaces: [Place] {
         var filtered = Array(places)
@@ -245,6 +245,7 @@ struct PlaceRowView: View {
         case "Hike": return "figure.hiking"
         case "Activity": return "sportscourt.fill"
         case "Restaurant": return "fork.knife"
+        case "Place of Worship": return "building.columns.fill"
         default: return "mappin.circle.fill"
         }
     }
@@ -255,6 +256,7 @@ struct PlaceRowView: View {
         case "Hike": return Color(hex: "56AB2F")
         case "Activity": return Color(hex: "FF6B6B")
         case "Restaurant": return Color(hex: "E74C3C")
+        case "Place of Worship": return Color(hex: "9B59B6")
         default: return Color(hex: "A855F7")
         }
     }
@@ -313,6 +315,8 @@ struct CategoryChip: View {
             return CategoryGradient.forCategory("Activity")
         case "Restaurant":
             return CategoryGradient.forCategory("Restaurant")
+        case "Place of Worship":
+            return CategoryGradient.forCategory("Place of Worship")
         case "Other":
             return CategoryGradient.forCategory("Other")
         default:
@@ -326,6 +330,7 @@ struct CategoryChip: View {
         case "Hike": return Color(hex: "56AB2F")
         case "Activity": return Color(hex: "FF6B6B")
         case "Restaurant": return Color(hex: "E74C3C")
+        case "Place of Worship": return Color(hex: "9B59B6")
         case "Other": return Color(hex: "A855F7")
         default: return Color.accentColor
         }

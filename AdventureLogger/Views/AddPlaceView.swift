@@ -34,7 +34,7 @@ struct AddPlaceView: View {
         span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)
     )
 
-    let categories = ["Beach", "Hike", "Activity", "Restaurant", "Other"]
+    let categories = ["Beach", "Hike", "Activity", "Restaurant", "Place of Worship", "Other"]
 
     var body: some View {
         NavigationView {

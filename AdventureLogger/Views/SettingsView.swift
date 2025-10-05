@@ -20,7 +20,7 @@ struct SettingsView: View {
     @State private var showingClearDataAlert = false
     @State private var showingExportSheet = false
 
-    let categories = ["Beach", "Hike", "Activity", "Restaurant", "Other"]
+    let categories = ["Beach", "Hike", "Activity", "Restaurant", "Place of Worship", "Other"]
     let mapTypes = ["standard", "hybrid", "satellite"]
     let sortOrders = ["name", "date", "distance", "rating"]
 

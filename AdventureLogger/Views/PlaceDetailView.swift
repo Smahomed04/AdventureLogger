@@ -275,6 +275,7 @@ struct PlaceDetailView: View {
                                 Text("Hike").tag("Hike")
                                 Text("Activity").tag("Activity")
                                 Text("Restaurant").tag("Restaurant")
+                                Text("Worship").tag("Place of Worship")
                                 Text("Other").tag("Other")
                             }
                             .pickerStyle(SegmentedPickerStyle())
@@ -412,6 +413,7 @@ struct PlaceDetailView: View {
         case "Hike": return "figure.hiking"
         case "Activity": return "sportscourt.fill"
         case "Restaurant": return "fork.knife"
+        case "Place of Worship": return "building.columns.fill"
         default: return "mappin.circle.fill"
         }
     }
@@ -440,6 +442,7 @@ struct CategoryBadge: View {
         case "Hike": return "figure.hiking"
         case "Activity": return "sportscourt.fill"
         case "Restaurant": return "fork.knife"
+        case "Place of Worship": return "building.columns.fill"
         default: return "mappin.circle.fill"
         }
     }
@@ -450,6 +453,7 @@ struct CategoryBadge: View {
         case "Hike": return .green
         case "Activity": return .orange
         case "Restaurant": return .red
+        case "Place of Worship": return Color(hex: "9B59B6")
         default: return .purple
         }
     }

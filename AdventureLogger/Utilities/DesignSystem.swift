@@ -12,6 +12,7 @@ extension Color {
     static let hikeGradient = [Color(hex: "66BB3F"), Color(hex: "B8F073")]
     static let activityGradient = [Color(hex: "FF7B7B"), Color(hex: "FFC357")]
     static let restaurantGradient = [Color(hex: "F75C4C"), Color(hex: "FF7BAD")]
+    static let worshipGradient = [Color(hex: "9B59B6"), Color(hex: "6C5CE7")]
     static let otherGradient = [Color(hex: "B865FF"), Color(hex: "FC5899")]
 
     // App accent colors (adaptive)
@@ -62,6 +63,8 @@ struct CategoryGradient {
             colors = Color.activityGradient
         case "Restaurant":
             colors = Color.restaurantGradient
+        case "Place of Worship":
+            colors = Color.worshipGradient
         default:
             colors = Color.otherGradient
         }
