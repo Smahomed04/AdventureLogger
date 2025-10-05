@@ -112,7 +112,7 @@ struct DiscoverView: View {
                     viewModel.discoverNearbyPlaces(category: selectedCategory)
                 }
             }
-            .onChange(of: selectedCategory) { newCategory in
+            .onChange(of: selectedCategory) { _, newCategory in
                 viewModel.discoverNearbyPlaces(category: newCategory)
             }
             .alert("Add to Adventures", isPresented: $showingAddAlert) {

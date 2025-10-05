@@ -17,11 +17,8 @@ struct SettingsView: View {
     @Environment(\.managedObjectContext) private var viewContext
     @FetchRequest(sortDescriptors: []) private var places: FetchedResults<Place>
 
-    @StateObject private var networkMonitor = NetworkMonitor.shared
-    @State private var syncStatus: SyncStatus = .idle
     @State private var showingClearDataAlert = false
     @State private var showingExportSheet = false
-    @State private var showingImportSheet = false
 
     let categories = ["Beach", "Hike", "Activity", "Restaurant", "Other"]
     let mapTypes = ["standard", "hybrid", "satellite"]
@@ -77,44 +74,15 @@ struct SettingsView: View {
                     }
                 }
 
-                // MARK: - Network Status
-                Section(header: Text("Network & Connection").font(.system(size: 14, weight: .semibold, design: .rounded))) {
-                    HStack {
-                        Image(systemName: networkMonitor.connectionType.icon)
-                            .foregroundColor(networkMonitor.isConnected ? .green : .red)
-                        Text(networkMonitor.isConnected ? "Connected" : "Offline")
-                        Spacer()
-                        Text(networkMonitor.connectionType.description)
-                            .foregroundColor(.secondary)
-                            .font(.caption)
-                    }
-                }
-
                 // MARK: - Cloud & Sync
                 Section(header: Text("iCloud & Sync").font(.system(size: 14, weight: .semibold, design: .rounded)), footer: Text("Automatically sync your adventures across all your devices using iCloud").font(.system(size: 12, weight: .regular, design: .rounded))) {
-                    // Sync Status
-                    HStack {
-                        Image(systemName: syncStatus.icon)
-                            .foregroundColor(syncStatusColor)
-                        Text("Sync Status")
-                        Spacer()
-                        Text(syncStatus.description)
-                            .foregroundColor(.secondary)
-                            .font(.caption)
-                    }
-
-                    // Manual Sync Button
-                    Button(action: {
-                        syncStatus = .syncing
-                        PersistenceController.shared.forceSyncToCloud()
-                    }) {
-                        HStack {
-                            Image(systemName: "arrow.triangle.2.circlepath")
-                            Text("Sync Now")
-                            Spacer()
-                        }
-                    }
-                    .disabled(!networkMonitor.isConnected || syncStatus == .syncing)
+                    // Sync status indicator
+//                    VStack(alignment: .leading, spacing: 12) {
+//                        SyncStatusIndicator()
+//
+//                        CloudSyncButton()
+//                    }
+//                    .padding(.vertical, 8)
 
                     Toggle("Auto Sync with iCloud", isOn: $autoSyncCloudKit)
 
@@ -164,12 +132,8 @@ struct SettingsView: View {
 
                 // MARK: - Data Management
                 Section(header: Text("Data Management").font(.system(size: 14, weight: .semibold, design: .rounded))) {
-                    Button(action: { exportData() }) {
-                        Label("Export Data as JSON", systemImage: "square.and.arrow.up")
-                    }
-
-                    Button(action: { showingImportSheet = true }) {
-                        Label("Import Data from JSON", systemImage: "square.and.arrow.down")
+                    Button(action: { showingExportSheet = true }) {
+                        Label("Export Data", systemImage: "square.and.arrow.up")
                     }
 
                     Button(action: {

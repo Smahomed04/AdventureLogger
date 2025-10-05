@@ -119,10 +119,10 @@ struct AddPlaceView: View {
                         }
                         .frame(height: 200)
                         .cornerRadius(8)
-                        .onChange(of: latitude) { newValue in
+                        .onChange(of: latitude) { _, _ in
                             updateRegion()
                         }
-                        .onChange(of: longitude) { newValue in
+                        .onChange(of: longitude) { _, _ in
                             updateRegion()
                         }
                     }

@@ -45,6 +45,9 @@ struct PlaceListView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
+                // Network status banner
+                // NetworkStatusBanner()
+
                 // Category filter
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(spacing: 12) {

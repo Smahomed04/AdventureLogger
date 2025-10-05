@@ -360,8 +360,15 @@ struct PlaceDetailView: View {
         // Update visited status
         if editedVisited != place.isVisited {
             place.isVisited = editedVisited
-            if editedVisited && place.visitedDate == nil {
-                place.visitedDate = Date()
+            if editedVisited {
+                // Setting as visited
+                if place.visitedDate == nil {
+                    place.visitedDate = Date()
+                }
+            } else {
+                // Setting as NOT visited - clear visited date and rating
+                place.visitedDate = nil
+                place.rating = 0
             }
         }
 

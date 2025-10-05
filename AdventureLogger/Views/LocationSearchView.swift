@@ -74,7 +74,7 @@ struct LocationSearchView: View {
             .navigationTitle("Search Location")
             .navigationBarTitleDisplayMode(.inline)
             .searchable(text: $searchText, prompt: "Try: 'blue beach', 'italian restaurant', 'opera house'...")
-            .onChange(of: searchText) { newValue in
+            .onChange(of: searchText) { _, newValue in
                 viewModel.search(query: newValue)
             }
             .toolbar {

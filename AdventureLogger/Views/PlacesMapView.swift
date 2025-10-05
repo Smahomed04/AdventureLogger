@@ -24,6 +24,8 @@ struct PlacesMapView: View {
     @State private var trackUserLocation = false
     @State private var mapType: MKMapType = .standard
     @State private var filterType: MapFilterType = .all
+    @State private var showingCountrySelector = false
+    @State private var selectedCountry: String?
 
     enum MapFilterType: String, CaseIterable {
         case all = "All"
@@ -31,15 +33,40 @@ struct PlacesMapView: View {
         case unvisited = "To Visit"
     }
 
+    // Group places by country
+    var placesByCountry: [String: [Place]] {
+        Dictionary(grouping: Array(places), by: { place in
+            place.address?.components(separatedBy: ", ").last ?? "Unknown"
+        })
+    }
+
+    // Get countries sorted by place count
+    var countriesWithCounts: [(country: String, count: Int)] {
+        placesByCountry.map { (country: $0.key, count: $0.value.count) }
+            .sorted { $0.count > $1.count }
+    }
+
     var filteredPlaces: [Place] {
+        var filtered: [Place]
+
         switch filterType {
         case .all:
-            return Array(places)
+            filtered = Array(places)
         case .visited:
-            return places.filter { $0.isVisited }
+            filtered = places.filter { $0.isVisited }
         case .unvisited:
-            return places.filter { !$0.isVisited }
+            filtered = places.filter { !$0.isVisited }
         }
+
+        // Further filter by selected country
+        if let country = selectedCountry {
+            filtered = filtered.filter { place in
+                let placeCountry = place.address?.components(separatedBy: ", ").last ?? "Unknown"
+                return placeCountry == country
+            }
+        }
+
+        return filtered
     }
 
     var body: some View {
@@ -64,22 +91,58 @@ struct PlacesMapView: View {
             // Controls overlay
             VStack(spacing: 0) {
                 // Filter chips at top
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
-                        ForEach(MapFilterType.allCases, id: \.self) { filter in
-                            MapFilterChip(
-                                title: filter.rawValue,
-                                icon: filterIcon(for: filter),
-                                isSelected: filterType == filter
-                            ) {
-                                withAnimation {
-                                    filterType = filter
+                VStack(spacing: 0) {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(MapFilterType.allCases, id: \.self) { filter in
+                                MapFilterChip(
+                                    title: filter.rawValue,
+                                    icon: filterIcon(for: filter),
+                                    isSelected: filterType == filter
+                                ) {
+                                    withAnimation {
+                                        filterType = filter
+                                    }
                                 }
                             }
                         }
+                        .padding(.horizontal)
+                        .padding(.vertical, 12)
                     }
-                    .padding(.horizontal)
-                    .padding(.vertical, 12)
+
+                    // Selected country indicator
+                    if let country = selectedCountry {
+                        HStack(spacing: 8) {
+                            Image(systemName: "globe")
+                                .font(.system(size: 12, weight: .semibold))
+                            Text(country)
+                                .font(.system(size: 13, weight: .bold, design: .rounded))
+                            Button(action: {
+                                withAnimation {
+                                    selectedCountry = nil
+                                    showAllPlaces()
+                                }
+                            }) {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.white.opacity(0.8))
+                            }
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(
+                            LinearGradient(
+                                colors: [Color(hex: "667eea"), Color(hex: "764ba2")],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .foregroundColor(.white)
+                        .cornerRadius(18)
+                        .padding(.horizontal)
+                        .padding(.bottom, 10)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                    }
                 }
                 .background(.ultraThinMaterial)
                 .padding(.top, 60)
@@ -88,6 +151,13 @@ struct PlacesMapView: View {
                     Spacer()
 
                     VStack(spacing: 16) {
+                        // Country selector
+                        MapControlButton(icon: "globe", gradient: LinearGradient(
+                            colors: [Color(hex: "667eea"), Color(hex: "764ba2")],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ), action: { showingCountrySelector.toggle() })
+
                         // Map type selector
                         MapControlButton(icon: "map", action: toggleMapType)
 
@@ -133,6 +203,22 @@ struct PlacesMapView: View {
                     PlaceDetailView(place: place)
                 }
             }
+        }
+        .sheet(isPresented: $showingCountrySelector) {
+            CountrySelectorView(
+                countries: countriesWithCounts,
+                selectedCountry: selectedCountry,
+                onSelectCountry: { country in
+                    selectedCountry = country
+                    showingCountrySelector = false
+                    zoomToCountry(country)
+                },
+                onClearSelection: {
+                    selectedCountry = nil
+                    showingCountrySelector = false
+                    showAllPlaces()
+                }
+            )
         }
         .onAppear {
             showAllPlaces()
@@ -196,6 +282,37 @@ struct PlacesMapView: View {
         )
 
         withAnimation {
+            region = MKCoordinateRegion(center: center, span: span)
+        }
+    }
+
+    private func zoomToCountry(_ country: String) {
+        let countryPlaces = placesByCountry[country] ?? []
+        guard !countryPlaces.isEmpty else { return }
+
+        var minLat = countryPlaces.first!.latitude
+        var maxLat = countryPlaces.first!.latitude
+        var minLon = countryPlaces.first!.longitude
+        var maxLon = countryPlaces.first!.longitude
+
+        for place in countryPlaces {
+            minLat = min(minLat, place.latitude)
+            maxLat = max(maxLat, place.latitude)
+            minLon = min(minLon, place.longitude)
+            maxLon = max(maxLon, place.longitude)
+        }
+
+        let center = CLLocationCoordinate2D(
+            latitude: (minLat + maxLat) / 2,
+            longitude: (minLon + maxLon) / 2
+        )
+
+        let span = MKCoordinateSpan(
+            latitudeDelta: max((maxLat - minLat) * 1.5, 0.1),
+            longitudeDelta: max((maxLon - minLon) * 1.5, 0.1)
+        )
+
+        withAnimation(.spring(response: 0.6, dampingFraction: 0.8)) {
             region = MKCoordinateRegion(center: center, span: span)
         }
     }
@@ -485,6 +602,157 @@ struct MapPlacePreview: View {
 
     private var categoryGradient: LinearGradient {
         CategoryGradient.forCategory(place.category ?? "Other")
+    }
+}
+
+struct CountrySelectorView: View {
+    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.dismiss) private var dismiss
+    let countries: [(country: String, count: Int)]
+    let selectedCountry: String?
+    let onSelectCountry: (String) -> Void
+    let onClearSelection: () -> Void
+
+    var body: some View {
+        NavigationView {
+            VStack(spacing: 0) {
+                // Header
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Select Country")
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .foregroundColor(.primary)
+                    Text("Zoom into your adventures by country")
+                        .font(.system(size: 15, weight: .regular, design: .rounded))
+                        .foregroundColor(.secondary)
+                }
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+                // Clear selection button
+                if selectedCountry != nil {
+                    Button(action: {
+                        onClearSelection()
+                        dismiss()
+                    }) {
+                        HStack {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.white)
+                            Text("Clear Selection - View All")
+                                .font(.system(size: 15, weight: .bold, design: .rounded))
+                                .foregroundColor(.white)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                        .background(
+                            LinearGradient(
+                                colors: [Color.red, Color.red.opacity(0.8)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .cornerRadius(12)
+                    }
+                    .padding(.horizontal)
+                    .padding(.bottom, 12)
+                }
+
+                // Country list
+                ScrollView {
+                    LazyVStack(spacing: 12) {
+                        ForEach(countries, id: \.country) { item in
+                            CountryRow(
+                                country: item.country,
+                                count: item.count,
+                                isSelected: selectedCountry == item.country
+                            ) {
+                                onSelectCountry(item.country)
+                                dismiss()
+                            }
+                        }
+                    }
+                    .padding()
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Close") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct CountryRow: View {
+    @Environment(\.colorScheme) var colorScheme
+    let country: String
+    let count: Int
+    let isSelected: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 16) {
+                // Flag/Globe icon
+                ZStack {
+                    Circle()
+                        .fill(
+                            isSelected ?
+                            LinearGradient(
+                                colors: [Color(hex: "667eea"), Color(hex: "764ba2")],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ) :
+                            LinearGradient(
+                                colors: [Color.accentColor.opacity(0.2), Color.accentColor.opacity(0.1)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(width: 50, height: 50)
+
+                    Image(systemName: "globe")
+                        .foregroundColor(isSelected ? .white : .accentColor)
+                        .font(.system(size: 22, weight: .semibold))
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(country)
+                        .font(.system(size: 17, weight: .bold, design: .rounded))
+                        .foregroundColor(.primary)
+
+                    Text("\(count) place\(count == 1 ? "" : "s")")
+                        .font(.system(size: 14, weight: .medium, design: .rounded))
+                        .foregroundColor(.secondary)
+                }
+
+                Spacer()
+
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                        .font(.system(size: 24))
+                } else {
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.secondary.opacity(0.5))
+                        .font(.system(size: 14, weight: .semibold))
+                }
+            }
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.cardBackground)
+                    .shadow(
+                        color: colorScheme == .dark ? Color.white.opacity(0.05) : Color.black.opacity(0.1),
+                        radius: 8,
+                        x: 0,
+                        y: 4
+                    )
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 

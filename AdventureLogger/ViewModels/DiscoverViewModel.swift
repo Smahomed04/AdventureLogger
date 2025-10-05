@@ -30,7 +30,7 @@ class DiscoverViewModel: ObservableObject {
                     radius: radius
                 )
 
-            case .failure(let locationError):
+            case .failure(_):
                 DispatchQueue.main.async {
                     self.isLoading = false
                     self.error = .locationAccessDenied
