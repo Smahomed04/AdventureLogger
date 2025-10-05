@@ -12,8 +12,10 @@ AdventureLogger is a comprehensive iOS application that helps you keep track of 
 - **Add Places**: Easily add places using intelligent location search
 - **Track Visits**: Mark places as visited and add ratings (1-5 stars)
 - **Personal Reflections**: Write notes and memories about each place
-- **Categories**: Organize places by type (Beach, Hike, Activity, Restaurant, Other)
+- **Categories**: Organize places by type (Beach, Hike, Activity, Restaurant, Place of Worship, Other)
+- **Trip Organization**: Create trips to group adventures into meaningful memories
 - **Interactive Map**: View all your places on an interactive map with custom markers
+- **Country Filtering**: Filter map by country with automatic zoom to selected region
 - **Discover Nearby**: Find new places near you using REST APIs
 - **Search & Filter**: Quickly find places using search and category filters
 - **Statistics**: Track your progress with visit counts and average ratings
@@ -21,11 +23,15 @@ AdventureLogger is a comprehensive iOS application that helps you keep track of 
 ### Advanced Features
 - **iCloud Sync**: Automatically sync your adventures across all your Apple devices
 - **Location Search**: Search for places by name without needing exact coordinates
-- **Smart Search**: Use keywords and partial names to find places
+- **Smart Search**: Use keywords and partial names to find places intelligently
+- **Modern UI Design**: Beautiful gradient cards, glassmorphism effects, and smooth animations
+- **Dark Mode**: Fully adaptive design that works perfectly in light and dark modes
+- **Image Caching**: Fast-loading place images with Kingfisher integration
 - **Data Export**: Export your data in JSON, CSV, or Text format
 - **User Preferences**: Customize app behavior with persistent settings
 - **Real-time Updates**: See changes immediately across all views
 - **Pull-to-Refresh**: Update your list with a simple pull gesture
+- **Frosted Glass Tab Bar**: Beautiful ultra-thin material tab bar effect
 
 ---
 
@@ -109,10 +115,12 @@ For live nearby place discovery (optional - mock data works by default):
 ### Adding a Place
 1. Tap the **"Adventures"** tab
 2. Tap the **"+"** button in the top right
-3. Search for a place using the search bar (e.g., "Bondi Beach", "Italian restaurant")
+3. Search for a place using the search bar (e.g., "Bondi Beach", "Italian restaurant", "mosque")
 4. Select a location from the search results
 5. Fill in details (category, description, rating if visited)
-6. Tap **"Save"**
+6. Choose a category: Beach, Hike, Activity, Restaurant, Place of Worship, or Other
+7. Optionally assign to a Trip
+8. Tap **"Save"**
 
 ### Marking a Place as Visited
 1. Tap on a place in your list
@@ -128,9 +136,34 @@ For live nearby place discovery (optional - mock data works by default):
    - 🟢 Green = Hike
    - 🟠 Orange = Activity
    - 🔴 Red = Restaurant
+   - 🟣 Purple = Place of Worship
    - 🟣 Purple = Other
 3. Green checkmark badge = Visited places
 4. Tap any marker to view details
+5. Use filter chips to show: All, Visited, or To Visit
+6. Tap the globe button to filter by country and auto-zoom
+
+### Creating and Managing Trips
+1. Tap the **"Trips"** tab
+2. Tap the **"+"** button to create a new trip
+3. Enter trip name (e.g., "Summer in Europe", "Hajj 2024")
+4. Add description and set start/end dates
+5. Tap **"Create Trip"**
+6. Open the trip and tap **"Add Places"** to add adventures to it
+7. View all places in the trip organized chronologically
+8. See trip statistics (total places, visited count, average rating)
+
+### Assigning Places to Trips
+**Method 1**: From Trip Detail
+1. Open a trip and tap **"Add Places"**
+2. Select multiple places from the list
+3. Tap **"Add"** to assign them to the trip
+
+**Method 2**: From Place Detail
+1. Open any place from Adventures list
+2. Scroll to the "Trip" section
+3. Tap **"Assign to a Trip"**
+4. Select the trip from the list
 
 ### Discovering New Places
 1. Tap the **"Discover"** tab
@@ -146,6 +179,11 @@ For live nearby place discovery (optional - mock data works by default):
 5. Tap **"Export Data"**
 6. Share via any app (AirDrop, Mail, Messages, etc.)
 
+### Managing Image Cache
+1. Tap the **"Settings"** tab
+2. Tap **"Clear Image Cache"** to free up storage
+3. Images will reload automatically when needed
+
 ---
 
 ## 🏗️ Project Structure
@@ -153,55 +191,319 @@ For live nearby place discovery (optional - mock data works by default):
 ```
 AdventureLogger/
 ├── AdventureLoggerApp.swift          # App entry point
-├── ContentView.swift                  # Main tab view
+├── ContentView.swift                  # Main tab view (5 tabs)
 ├── Persistence.swift                  # CoreData + CloudKit setup
 │
 ├── Views/
-│   ├── PlaceListView.swift           # Home screen list
+│   ├── PlaceListView.swift           # Adventures list with filters
 │   ├── AddPlaceView.swift            # Add/create new place
 │   ├── PlaceDetailView.swift         # View/edit place details
-│   ├── PlacesMapView.swift           # Interactive map
+│   ├── PlacesMapView.swift           # Interactive map with country filter
+│   ├── TripsView.swift               # Trip organization main view
+│   ├── TripDetailView.swift          # Trip details with places
+│   ├── AddTripView.swift             # Create new trip
+│   ├── AddPlacesToTripView.swift     # Add places to existing trip
 │   ├── DiscoverView.swift            # Discover nearby places
-│   ├── LocationSearchView.swift      # Location search with MKLocalSearch
+│   ├── LocationSearchView.swift      # Smart location search
 │   └── SettingsView.swift            # Settings & data export
 │
 ├── ViewModels/
 │   └── DiscoverViewModel.swift       # REST API & JSON parsing
 │
+├── Utilities/
+│   ├── DesignSystem.swift            # Modern design system with gradients
+│   ├── ImageCacheManager.swift       # Kingfisher image caching
+│   └── CloudSyncManager.swift        # CloudKit sync management
+│
 └── AdventureLogger.xcdatamodeld/     # CoreData model
-    └── Place entity with attributes:
-        - id, name, category
-        - latitude, longitude, address
-        - isVisited, visitedDate, rating
-        - personalReflection, placeDescription
-        - photos, createdAt, updatedAt
+    ├── Place entity:
+    │   - id, name, category
+    │   - latitude, longitude, address
+    │   - isVisited, visitedDate, rating
+    │   - personalReflection, placeDescription
+    │   - photoURL, createdAt, updatedAt
+    │   - trip (relationship to Trip)
+    │
+    └── Trip entity:
+        - id, name, tripDescription
+        - startDate, endDate
+        - coverImageURL, createdAt, updatedAt
+        - places (relationship to Place)
 ```
 
 ---
 
-## 🔧 Error Handling
+## 🔧 Error Handling Strategy
 
-### Location Errors
-- **Access Denied**: User-friendly alert prompting to enable location in Settings
-- **Unknown Error**: Generic error message with retry option
-- Handled in: `AddPlaceView.swift` (LocationError enum, lines 337-349)
+AdventureLogger implements a comprehensive, multi-layered error handling approach that prioritizes user experience while maintaining system stability. Our strategy follows three core principles:
 
-### Network Errors
-- **No Internet**: Alert when network is unavailable
-- **Invalid Response**: Handles malformed API responses
-- **Timeout**: 30-second timeout with retry option
-- Handled in: `DiscoverViewModel.swift` (DiscoverError enum)
+1. **Fail Gracefully**: Never crash - always provide fallback behavior
+2. **Inform Clearly**: Give users actionable, non-technical error messages
+3. **Log Thoroughly**: Capture detailed errors for debugging without exposing users
 
-### CoreData Errors
-- **Save Failures**: Logged to console with NSError details
-- **Merge Conflicts**: Auto-resolved with `automaticallyMergesChangesFromParent`
-- **CloudKit Sync**: Automatic retry on sync failures
+### Error Handling Architecture
 
-### User-Friendly Error Messages
-All errors are displayed to users via:
-- Alert dialogs with clear explanations
-- Actionable solutions (e.g., "Enable location in Settings")
-- Non-blocking error states (app remains usable)
+#### 1. Location Services Errors
+**Location**: `AddPlaceView.swift`, `LocationManager.swift`
+
+**Error Types**:
+```swift
+enum LocationError: LocalizedError {
+    case accessDenied
+    case locationUnavailable
+    case unknown(Error)
+}
+```
+
+**Handling Strategy**:
+- **Access Denied**:
+  - User sees: "Location access is required to use your current location. Please enable it in Settings."
+  - Action: Direct link to Settings (on device) or manual coordinate entry fallback
+  - Logged: Permission denial event
+
+- **Location Unavailable**:
+  - User sees: "Unable to determine your location. Please try again or enter manually."
+  - Action: Retry button + manual entry fallback
+  - Logged: GPS failure details
+
+- **Unknown Errors**:
+  - User sees: "Something went wrong. Please try again."
+  - Action: Retry option
+  - Logged: Full error details with stack trace
+
+**Implementation**:
+```swift
+locationManager.requestLocation { result in
+    switch result {
+    case .success(let location):
+        // Handle success
+    case .failure(let error):
+        showingLocationError = true
+        locationErrorMessage = error.localizedDescription
+        // Error logged to console with full context
+    }
+}
+```
+
+#### 2. Network & API Errors
+**Location**: `DiscoverViewModel.swift`
+
+**Error Types**:
+```swift
+enum DiscoverError: LocalizedError {
+    case networkUnavailable
+    case invalidResponse
+    case decodingFailed
+    case apiError(String)
+    case timeout
+}
+```
+
+**Handling Strategy**:
+- **Network Unavailable**:
+  - User sees: "No internet connection. Please check your network and try again."
+  - Fallback: Cached/mock data displayed with indicator
+  - Logged: Network state at time of failure
+
+- **Invalid Response**:
+  - User sees: "Unable to load places. Please try again later."
+  - Fallback: Shows previously loaded places if available
+  - Logged: Response details, status code, headers
+
+- **Timeout**:
+  - User sees: "Request timed out. Please try again."
+  - Action: Automatic retry (max 2 attempts) then manual retry
+  - Logged: Request duration, endpoint
+
+- **API Errors**:
+  - User sees: Specific message from API (sanitized)
+  - Fallback: Mock data for demonstration purposes
+  - Logged: Full API error response
+
+**Implementation**:
+```swift
+do {
+    let data = try await URLSession.shared.data(from: url)
+    // Process data
+} catch URLError.notConnectedToInternet {
+    self.error = .networkUnavailable
+    useMockData() // Graceful fallback
+} catch URLError.timedOut {
+    if retryCount < maxRetries {
+        await retry()
+    } else {
+        self.error = .timeout
+    }
+} catch {
+    self.error = .invalidResponse
+    print("API Error: \(error)") // Detailed logging
+}
+```
+
+#### 3. Core Data Errors
+**Location**: `Persistence.swift`, all View files with viewContext
+
+**Error Types**:
+- Save failures
+- Fetch failures
+- Merge conflicts
+- Migration errors
+
+**Handling Strategy**:
+- **Save Failures**:
+  - User sees: "Unable to save changes. Please try again."
+  - Action: Data preserved in UI, automatic retry on next change
+  - Logged: NSError with userInfo dictionary
+
+- **Merge Conflicts**:
+  - User sees: Nothing (auto-resolved)
+  - Resolution: Latest write wins (NSMergePolicy.mergeByPropertyObjectTrump)
+  - Logged: Conflict details for monitoring
+
+- **Fetch Failures**:
+  - User sees: Empty state with helpful message
+  - Fallback: Show cached data or empty state
+  - Logged: Predicate and sort descriptors
+
+**Implementation**:
+```swift
+do {
+    try viewContext.save()
+} catch {
+    let nsError = error as NSError
+    print("Save error: \(nsError)")
+    print("User info: \(nsError.userInfo)")
+
+    // Show user-friendly alert
+    errorMessage = "Unable to save changes. Please try again."
+    showingError = true
+
+    // Log for debugging
+    logError("CoreData Save", error: nsError)
+}
+```
+
+#### 4. CloudKit Sync Errors
+**Location**: `CloudSyncManager.swift`, `Persistence.swift`
+
+**Error Types**:
+- Account not available
+- Network errors
+- Quota exceeded
+- Sync conflicts
+
+**Handling Strategy**:
+- **Account Issues**:
+  - User sees: "iCloud is not available. Data will sync when you sign in."
+  - Fallback: Local-only mode continues working
+  - Logged: Account status details
+
+- **Sync Conflicts**:
+  - User sees: Nothing (auto-resolved)
+  - Resolution: Server truth wins for CloudKit data
+  - Logged: Conflict resolution path taken
+
+- **Quota Exceeded**:
+  - User sees: "iCloud storage is full. Please free up space."
+  - Fallback: Local storage only
+  - Logged: Current usage stats
+
+**Implementation**:
+```swift
+NotificationCenter.default.publisher(
+    for: NSPersistentCloudKitContainer.eventChangedNotification
+)
+.sink { notification in
+    guard let event = notification.userInfo?[...] as? Event else { return }
+
+    if let error = event.error {
+        handleCloudKitError(error)
+        logCloudKitEvent(event)
+    }
+}
+```
+
+#### 5. Image Loading Errors
+**Location**: `ImageCacheManager.swift`, Kingfisher integration
+
+**Error Types**:
+- Invalid URL
+- Download failure
+- Cache corruption
+
+**Handling Strategy**:
+- **Download Failure**:
+  - User sees: Placeholder image
+  - Action: Automatic retry with exponential backoff
+  - Logged: URL and error reason
+
+- **Cache Corruption**:
+  - User sees: Image reloads from source
+  - Action: Automatic cache clear and rebuild
+  - Logged: Affected cache keys
+
+**Implementation**:
+```swift
+KingfisherManager.shared.retrieveImage(with: url) { result in
+    switch result {
+    case .success(let value):
+        // Display image
+    case .failure(let error):
+        // Show placeholder
+        print("Image load error: \(error)")
+        logImageError(url: url, error: error)
+    }
+}
+```
+
+### Error Reporting & Logging
+
+#### Console Logging
+All errors are logged to console with context:
+```swift
+print("Error in \(functionName): \(error)")
+print("Context: \(additionalInfo)")
+```
+
+#### User Feedback
+- **Alerts**: For critical errors requiring user action
+- **Banners**: For non-critical informational errors
+- **Inline Messages**: For form validation and input errors
+- **Toast Messages**: For successful recovery or retries
+
+#### Error Recovery Mechanisms
+1. **Automatic Retry**: Network requests retry up to 2 times
+2. **Graceful Degradation**: Fall back to cached/mock data
+3. **User Retry**: Manual retry buttons for failed operations
+4. **State Preservation**: UI state maintained during errors
+
+### Testing Error Scenarios
+
+**Manual Testing Checklist**:
+- ✅ Airplane mode (network errors)
+- ✅ Location disabled (permission errors)
+- ✅ iCloud signed out (sync errors)
+- ✅ Invalid API key (API errors)
+- ✅ Corrupt data entry (validation errors)
+- ✅ Full storage (disk errors)
+
+### Error Prevention
+
+1. **Input Validation**: All user input validated before processing
+2. **Nil Coalescing**: Optional values safely unwrapped
+3. **Type Safety**: Swift's type system prevents many runtime errors
+4. **Guard Statements**: Early returns prevent invalid states
+5. **Default Values**: Sensible defaults for optional data
+
+### Documentation References
+
+For detailed implementation:
+- Location errors: See `AddPlaceView.swift` lines 230-260
+- Network errors: See `DiscoverViewModel.swift` lines 80-120
+- Core Data errors: See `Persistence.swift` lines 100-130
+- CloudKit errors: See `CloudSyncManager.swift` lines 160-200
+
+For more details, see: [ERROR_HANDLING.md](./ERROR_HANDLING.md)
 
 ---
 
@@ -284,15 +586,18 @@ This project fulfills all requirements for the iOS Application Development asses
 
 ## 🚦 Future Enhancements
 
-- [ ] Photo attachments for places
+- [ ] Photo attachments for places (multiple photos)
 - [ ] Share adventures with friends
-- [ ] Trip planning and routes
+- [ ] Trip routes and itineraries
 - [ ] Offline map caching
 - [ ] Custom place categories
-- [ ] Dark mode optimizations
+- [x] ~~Dark mode optimizations~~ ✅ Complete
 - [ ] iPad-optimized layout
 - [ ] Widget for home screen
 - [ ] Siri shortcuts integration
+- [x] ~~Trip organization~~ ✅ Complete
+- [x] ~~Place of Worship category~~ ✅ Complete
+- [x] ~~Country-based map filtering~~ ✅ Complete
 
 ---
 
