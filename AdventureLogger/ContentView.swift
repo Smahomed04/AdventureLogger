@@ -20,23 +20,29 @@ struct ContentView: View {
                 }
                 .tag(0)
 
-            PlacesMapView()
+            TripsView()
                 .tabItem {
-                    Label("Map", systemImage: selectedTab == 1 ? "map.fill" : "map")
+                    Label("Trips", systemImage: selectedTab == 1 ? "airplane.departure.fill" : "airplane.departure")
                 }
                 .tag(1)
 
-            DiscoverView()
+            PlacesMapView()
                 .tabItem {
-                    Label("Discover", systemImage: selectedTab == 2 ? "sparkle.magnifyingglass" : "magnifyingglass")
+                    Label("Map", systemImage: selectedTab == 2 ? "map.fill" : "map")
                 }
                 .tag(2)
 
-            SettingsView()
+            DiscoverView()
                 .tabItem {
-                    Label("Settings", systemImage: selectedTab == 3 ? "gearshape.fill" : "gearshape")
+                    Label("Discover", systemImage: selectedTab == 3 ? "sparkle.magnifyingglass" : "magnifyingglass")
                 }
                 .tag(3)
+
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: selectedTab == 4 ? "gearshape.fill" : "gearshape")
+                }
+                .tag(4)
         }
         .accentColor(Color(hex: "FF6B6B"))
     }

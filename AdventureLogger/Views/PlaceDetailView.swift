@@ -19,6 +19,10 @@ struct PlaceDetailView: View {
     @State private var editedRating = 0
     @State private var editedVisited = false
     @State private var showingDeleteAlert = false
+    @State private var showingTripSelector = false
+
+    @FetchRequest(sortDescriptors: [NSSortDescriptor(keyPath: \Trip.name, ascending: true)])
+    private var allTrips: FetchedResults<Trip>
 
     var body: some View {
         ScrollView {
@@ -286,6 +290,60 @@ struct PlaceDetailView: View {
                         .padding(.horizontal)
                     }
 
+                    // Trip Assignment
+                    VStack(alignment: .leading, spacing: 12) {
+                        Label("Trip", systemImage: "airplane.departure")
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                            .foregroundColor(.primary)
+
+                        if let trip = place.trip {
+                            HStack {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(trip.name ?? "Untitled Trip")
+                                        .font(.system(size: 15, weight: .semibold, design: .rounded))
+                                        .foregroundColor(.primary)
+                                    if let startDate = trip.startDate {
+                                        Text(startDate, style: .date)
+                                            .font(.system(size: 13, weight: .regular, design: .rounded))
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+
+                                Spacer()
+
+                                Button(action: { showingTripSelector = true }) {
+                                    Text("Change")
+                                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                                        .foregroundColor(.accentColor)
+                                }
+                            }
+                            .padding(12)
+                            .background(Color.secondaryBackground)
+                            .cornerRadius(10)
+                        } else {
+                            Button(action: { showingTripSelector = true }) {
+                                HStack {
+                                    Image(systemName: "plus.circle.fill")
+                                        .foregroundColor(.accentColor)
+                                    Text("Assign to a Trip")
+                                        .font(.system(size: 15, weight: .medium, design: .rounded))
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                                .padding(12)
+                                .background(Color.secondaryBackground)
+                                .cornerRadius(10)
+                            }
+                        }
+                    }
+                    .padding(16)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .glassCard()
+                    .padding(.horizontal)
+
                     // Metadata
                     if let createdAt = place.createdAt {
                         HStack(spacing: 8) {
@@ -338,6 +396,9 @@ struct PlaceDetailView: View {
             }
         } message: {
             Text("Are you sure you want to delete this place? This action cannot be undone.")
+        }
+        .sheet(isPresented: $showingTripSelector) {
+            TripSelectorView(place: place, trips: Array(allTrips))
         }
     }
 
@@ -496,6 +557,80 @@ private let dateFormatter: DateFormatter = {
     formatter.timeStyle = .none
     return formatter
 }()
+
+struct TripSelectorView: View {
+    @Environment(\.managedObjectContext) private var viewContext
+    @Environment(\.dismiss) private var dismiss
+    @ObservedObject var place: Place
+    let trips: [Trip]
+
+    var body: some View {
+        NavigationView {
+            List {
+                Section {
+                    Button(action: {
+                        place.trip = nil
+                        saveChanges()
+                    }) {
+                        HStack {
+                            Image(systemName: place.trip == nil ? "checkmark.circle.fill" : "circle")
+                                .foregroundColor(place.trip == nil ? .accentColor : .secondary)
+                            Text("No Trip")
+                                .foregroundColor(.primary)
+                        }
+                    }
+                }
+
+                Section(header: Text("Select Trip")) {
+                    ForEach(trips, id: \.id) { trip in
+                        Button(action: {
+                            place.trip = trip
+                            saveChanges()
+                        }) {
+                            HStack {
+                                Image(systemName: place.trip == trip ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(place.trip == trip ? .accentColor : .secondary)
+
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(trip.name ?? "Untitled")
+                                        .foregroundColor(.primary)
+                                        .font(.system(size: 16, weight: .semibold, design: .rounded))
+
+                                    if let startDate = trip.startDate {
+                                        Text(startDate, style: .date)
+                                            .foregroundColor(.secondary)
+                                            .font(.system(size: 14, design: .rounded))
+                                    }
+                                }
+
+                                Spacer()
+                            }
+                        }
+                    }
+                }
+            }
+            .navigationTitle("Assign to Trip")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+
+    private func saveChanges() {
+        do {
+            try viewContext.save()
+            dismiss()
+        } catch {
+            let nsError = error as NSError
+            print("Error assigning trip: \(nsError), \(nsError.userInfo)")
+        }
+    }
+}
 
 #Preview {
     NavigationView {
