@@ -16,33 +16,43 @@ struct ContentView: View {
         TabView(selection: $selectedTab) {
             PlaceListView()
                 .tabItem {
-                    Label("Adventures", systemImage: selectedTab == 0 ? "list.bullet.circle.fill" : "list.bullet.circle")
+                    Label("Adventures", systemImage: "mountain.2")
                 }
                 .tag(0)
+                .toolbarBackground(.visible, for: .tabBar)
+                .toolbarBackground(.ultraThinMaterial, for: .tabBar)
 
             TripsView()
                 .tabItem {
-                    Label("Trips", systemImage: selectedTab == 1 ? "airplane.departure.fill" : "airplane.departure")
+                    Label("Trips", systemImage: "airplane.departure")
                 }
                 .tag(1)
+                .toolbarBackground(.visible, for: .tabBar)
+                .toolbarBackground(.ultraThinMaterial, for: .tabBar)
 
             PlacesMapView()
                 .tabItem {
-                    Label("Map", systemImage: selectedTab == 2 ? "map.fill" : "map")
+                    Label("Map", systemImage: "map")
                 }
                 .tag(2)
+                .toolbarBackground(.visible, for: .tabBar)
+                .toolbarBackground(.ultraThinMaterial, for: .tabBar)
 
             DiscoverView()
                 .tabItem {
-                    Label("Discover", systemImage: selectedTab == 3 ? "sparkle.magnifyingglass" : "magnifyingglass")
+                    Label("Discover", systemImage: "magnifyingglass")
                 }
                 .tag(3)
+                .toolbarBackground(.visible, for: .tabBar)
+                .toolbarBackground(.ultraThinMaterial, for: .tabBar)
 
             SettingsView()
                 .tabItem {
-                    Label("Settings", systemImage: selectedTab == 4 ? "gearshape.fill" : "gearshape")
+                    Label("Settings", systemImage: "gearshape")
                 }
                 .tag(4)
+                .toolbarBackground(.visible, for: .tabBar)
+                .toolbarBackground(.ultraThinMaterial, for: .tabBar)
         }
         .accentColor(Color(hex: "FF6B6B"))
     }
