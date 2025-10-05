@@ -162,6 +162,7 @@ struct DiscoverView: View {
 }
 
 struct DiscoveredPlaceRow: View {
+    @Environment(\.colorScheme) var colorScheme
     let place: DiscoveredPlace
     let onAdd: () -> Void
     @State private var isPressed = false
@@ -179,7 +180,12 @@ struct DiscoveredPlaceRow: View {
                         )
                     )
                     .frame(width: 50, height: 50)
-                    .shadow(color: Color.accentColor.opacity(0.3), radius: 6, x: 0, y: 3)
+                    .shadow(
+                        color: colorScheme == .dark ? Color.clear : Color.accentColor.opacity(0.3),
+                        radius: 6,
+                        x: 0,
+                        y: 3
+                    )
 
                 Image(systemName: "mappin.and.ellipse")
                     .foregroundColor(.white)
@@ -243,7 +249,12 @@ struct DiscoveredPlaceRow: View {
                             )
                         )
                         .frame(width: 40, height: 40)
-                        .shadow(color: Color.accentColor.opacity(0.3), radius: 6, x: 0, y: 3)
+                        .shadow(
+                            color: colorScheme == .dark ? Color.clear : Color.accentColor.opacity(0.3),
+                            radius: 6,
+                            x: 0,
+                            y: 3
+                        )
 
                     Image(systemName: "plus")
                         .foregroundColor(.white)
@@ -255,12 +266,18 @@ struct DiscoveredPlaceRow: View {
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color.cardBackground)
-                .shadow(color: Color.black.opacity(0.08), radius: 8, x: 0, y: 4)
+                .shadow(
+                    color: colorScheme == .dark ? Color.white.opacity(0.05) : Color.black.opacity(0.08),
+                    radius: 8,
+                    x: 0,
+                    y: 4
+                )
         )
     }
 }
 
 struct CategoryFilterButton: View {
+    @Environment(\.colorScheme) var colorScheme
     let title: String
     let isSelected: Bool
     let action: () -> Void
@@ -281,7 +298,9 @@ struct CategoryFilterButton: View {
                             )
                         } else {
                             LinearGradient(
-                                colors: [Color(.systemGray6), Color(.systemGray5)],
+                                colors: colorScheme == .dark ?
+                                    [Color(.systemGray5), Color(.systemGray6)] :
+                                    [Color(.systemGray6), Color(.systemGray5)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -290,7 +309,12 @@ struct CategoryFilterButton: View {
                 )
                 .foregroundColor(isSelected ? .white : .primary)
                 .cornerRadius(20)
-                .shadow(color: isSelected ? Color.accentColor.opacity(0.3) : Color.clear, radius: 8, x: 0, y: 4)
+                .shadow(
+                    color: isSelected && colorScheme == .light ? Color.accentColor.opacity(0.3) : Color.clear,
+                    radius: 8,
+                    x: 0,
+                    y: 4
+                )
         }
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
     }

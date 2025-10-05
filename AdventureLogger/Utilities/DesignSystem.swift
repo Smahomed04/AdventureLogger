@@ -7,20 +7,21 @@ import SwiftUI
 
 // MARK: - Color Palette
 extension Color {
-    // Vibrant gradients for categories
-    static let beachGradient = [Color(hex: "4A90E2"), Color(hex: "50C9FF")]
-    static let hikeGradient = [Color(hex: "56AB2F"), Color(hex: "A8E063")]
-    static let activityGradient = [Color(hex: "FF6B6B"), Color(hex: "FFB347")]
-    static let restaurantGradient = [Color(hex: "E74C3C"), Color(hex: "FF6B9D")]
-    static let otherGradient = [Color(hex: "A855F7"), Color(hex: "EC4899")]
+    // Vibrant gradients for categories (adjusted for dark mode)
+    static let beachGradient = [Color(hex: "5BA3F5"), Color(hex: "60D5FF")]
+    static let hikeGradient = [Color(hex: "66BB3F"), Color(hex: "B8F073")]
+    static let activityGradient = [Color(hex: "FF7B7B"), Color(hex: "FFC357")]
+    static let restaurantGradient = [Color(hex: "F75C4C"), Color(hex: "FF7BAD")]
+    static let otherGradient = [Color(hex: "B865FF"), Color(hex: "FC5899")]
 
-    // App accent colors
+    // App accent colors (adaptive)
     static let primaryAccent = Color(hex: "FF6B6B")
     static let secondaryAccent = Color(hex: "4ECDC4")
 
-    // Background colors
+    // Adaptive background colors
     static let cardBackground = Color(.systemBackground)
     static let secondaryBackground = Color(.secondarySystemBackground)
+    static let tertiaryBackground = Color(.tertiarySystemBackground)
 
     // Helper to create Color from hex
     init(hex: String) {
@@ -70,6 +71,7 @@ struct CategoryGradient {
 
 // MARK: - Custom View Modifiers
 struct GlassCardModifier: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
     var cornerRadius: CGFloat = 16
 
     func body(content: Content) -> some View {
@@ -77,18 +79,30 @@ struct GlassCardModifier: ViewModifier {
             .background(
                 RoundedRectangle(cornerRadius: cornerRadius)
                     .fill(Color.cardBackground)
-                    .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 4)
+                    .shadow(
+                        color: colorScheme == .dark ? Color.white.opacity(0.05) : Color.black.opacity(0.1),
+                        radius: 10,
+                        x: 0,
+                        y: 4
+                    )
             )
     }
 }
 
 struct FloatingButtonStyle: ViewModifier {
+    @Environment(\.colorScheme) var colorScheme
+
     func body(content: Content) -> some View {
         content
             .background(
                 Circle()
                     .fill(Color.cardBackground)
-                    .shadow(color: Color.black.opacity(0.15), radius: 8, x: 0, y: 4)
+                    .shadow(
+                        color: colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.15),
+                        radius: 8,
+                        x: 0,
+                        y: 4
+                    )
             )
     }
 }
@@ -199,6 +213,7 @@ struct StatCard: View {
 }
 
 struct ModernButton: View {
+    @Environment(\.colorScheme) var colorScheme
     let title: String
     let icon: String
     let gradient: LinearGradient
@@ -217,7 +232,12 @@ struct ModernButton: View {
             .padding(.vertical, 16)
             .background(gradient)
             .cornerRadius(14)
-            .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 4)
+            .shadow(
+                color: colorScheme == .dark ? Color.clear : Color.black.opacity(0.2),
+                radius: 8,
+                x: 0,
+                y: 4
+            )
         }
     }
 }

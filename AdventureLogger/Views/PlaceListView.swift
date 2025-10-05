@@ -135,6 +135,7 @@ struct PlaceListView: View {
 struct PlaceRowView: View {
     @ObservedObject var place: Place
     @State private var isPressed = false
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
         HStack(spacing: 16) {
@@ -143,7 +144,12 @@ struct PlaceRowView: View {
                 RoundedRectangle(cornerRadius: 16)
                     .fill(categoryGradient)
                     .frame(width: 60, height: 60)
-                    .shadow(color: categoryColor.opacity(0.4), radius: 8, x: 0, y: 4)
+                    .shadow(
+                        color: colorScheme == .dark ? Color.clear : categoryColor.opacity(0.4),
+                        radius: 8,
+                        x: 0,
+                        y: 4
+                    )
 
                 Image(systemName: categoryIcon)
                     .foregroundColor(.white)
@@ -217,7 +223,14 @@ struct PlaceRowView: View {
         .background(
             RoundedRectangle(cornerRadius: 16)
                 .fill(Color.cardBackground)
-                .shadow(color: Color.black.opacity(isPressed ? 0.05 : 0.1), radius: isPressed ? 4 : 8, x: 0, y: isPressed ? 2 : 4)
+                .shadow(
+                    color: colorScheme == .dark ?
+                        Color.white.opacity(isPressed ? 0.02 : 0.05) :
+                        Color.black.opacity(isPressed ? 0.05 : 0.1),
+                    radius: isPressed ? 4 : 8,
+                    x: 0,
+                    y: isPressed ? 2 : 4
+                )
         )
         .scaleEffect(isPressed ? 0.98 : 1.0)
         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
@@ -249,6 +262,7 @@ struct PlaceRowView: View {
 }
 
 struct CategoryChip: View {
+    @Environment(\.colorScheme) var colorScheme
     let title: String
     let isSelected: Bool
     let action: () -> Void
@@ -265,7 +279,9 @@ struct CategoryChip: View {
                             categoryGradient
                         } else {
                             LinearGradient(
-                                colors: [Color(.systemGray6), Color(.systemGray5)],
+                                colors: colorScheme == .dark ?
+                                    [Color(.systemGray5), Color(.systemGray6)] :
+                                    [Color(.systemGray6), Color(.systemGray5)],
                                 startPoint: .topLeading,
                                 endPoint: .bottomTrailing
                             )
@@ -274,7 +290,12 @@ struct CategoryChip: View {
                 )
                 .foregroundColor(isSelected ? .white : .primary)
                 .cornerRadius(20)
-                .shadow(color: isSelected ? categoryColor.opacity(0.3) : Color.clear, radius: 8, x: 0, y: 4)
+                .shadow(
+                    color: isSelected && colorScheme == .light ? categoryColor.opacity(0.3) : Color.clear,
+                    radius: 8,
+                    x: 0,
+                    y: 4
+                )
         }
         .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isSelected)
     }
