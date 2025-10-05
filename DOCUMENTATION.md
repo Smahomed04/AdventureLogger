@@ -353,7 +353,7 @@ All views include SwiftUI `#Preview` for rapid development and testing.
 ## Credits
 
 **Developer**: Claude Code (Anthropic)
-**Student**: Sa'd Mahomed
+**Student**: Taahir Mahomed
 **Course**: iOS Application Development
 **Date**: October 2025
 
