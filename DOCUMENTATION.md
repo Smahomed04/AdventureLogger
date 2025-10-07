@@ -149,15 +149,15 @@ The project currently builds for macOS. Follow these steps to change it to iOS:
 
 ### Swift Package Manager Setup
 
-**Add Kingfisher for Image Caching:**
+**Kingfisher for Image Caching - ALREADY INTEGRATED:**
 
-1. In Xcode, go to `File` → `Add Package Dependencies...`
-2. Paste URL: `https://github.com/onevcat/Kingfisher.git`
-3. Click **Add Package**
-4. Select version: `Up to Next Major` (7.0.0 < 8.0.0)
-5. Ensure **AdventureLogger** target is checked
-6. Click **Add Package**
-7. Uncomment the code in `Utilities/ImageCacheManager.swift` to enable functionality
+✅ **Status:** Kingfisher is already added and configured in this project.
+
+- Package: `https://github.com/onevcat/Kingfisher.git`
+- Version: 8.5.0
+- Target: AdventureLogger
+- Location: `Utilities/ImageCacheManager.swift`
+- Usage: Active and functional (used in SettingsView)
 
 **Why Kingfisher?**
 - Image caching (memory + disk)

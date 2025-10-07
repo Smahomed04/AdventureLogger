@@ -196,7 +196,7 @@ AdventureLogger/
 │
 ├── Views/
 │   ├── PlaceListView.swift           # Adventures list with filters
-│   ├── AddPlaceView.swift            # Add/create new place
+│   ├── AddPlaceView.swift            # Add/create new place (includes LocationManager)
 │   ├── PlaceDetailView.swift         # View/edit place details
 │   ├── PlacesMapView.swift           # Interactive map with country filter
 │   ├── TripsView.swift               # Trip organization main view
