@@ -8,10 +8,51 @@
 
 /* Begin PBXBuildFile section */
 		628E94A22E909D3C007CC982 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 628E94A12E909D3C007CC982 /* Kingfisher */; };
+		893F8F8D2E9FB12100BB4BFD /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 893F8F8C2E9FB12100BB4BFD /* WidgetKit.framework */; };
+		893F8F8F2E9FB12100BB4BFD /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 893F8F8E2E9FB12100BB4BFD /* SwiftUI.framework */; };
+		893F8FA02E9FB12D00BB4BFD /* AdventureLoggerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 893F8F8A2E9FB12100BB4BFD /* AdventureLoggerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		89BC1B3B2EA10836001D4AC3 /* AdventureLoggerShareExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 89BC1B312EA10836001D4AC3 /* AdventureLoggerShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		893F8F9E2E9FB12D00BB4BFD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 628E937D2E8FA5B1007CC982 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 893F8F892E9FB12100BB4BFD;
+			remoteInfo = AdventureLoggerWidgetExtension;
+		};
+		89BC1B392EA10836001D4AC3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 628E937D2E8FA5B1007CC982 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 89BC1B302EA10836001D4AC3;
+			remoteInfo = AdventureLoggerShareExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		893F8FA52E9FB12D00BB4BFD /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				893F8FA02E9FB12D00BB4BFD /* AdventureLoggerWidgetExtension.appex in Embed Foundation Extensions */,
+				89BC1B3B2EA10836001D4AC3 /* AdventureLoggerShareExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		628E93852E8FA5B1007CC982 /* AdventureLogger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AdventureLogger.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		890E97DE2E9FC69600EC5013 /* AdventureLoggerWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = AdventureLoggerWidgetExtension.entitlements; sourceTree = "<group>"; };
+		893F8F8A2E9FB12100BB4BFD /* AdventureLoggerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AdventureLoggerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		893F8F8C2E9FB12100BB4BFD /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		893F8F8E2E9FB12100BB4BFD /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		89BC1B312EA10836001D4AC3 /* AdventureLoggerShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = AdventureLoggerShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -22,6 +63,20 @@
 			);
 			target = 628E93842E8FA5B1007CC982 /* AdventureLogger */;
 		};
+		893F8FA42E9FB12D00BB4BFD /* Exceptions for "AdventureLoggerWidget" folder in "AdventureLoggerWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 893F8F892E9FB12100BB4BFD /* AdventureLoggerWidgetExtension */;
+		};
+		89BC1B3F2EA10836001D4AC3 /* Exceptions for "AdventureLoggerShareExtension" folder in "AdventureLoggerShareExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 89BC1B302EA10836001D4AC3 /* AdventureLoggerShareExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -31,6 +86,22 @@
 				628E93952E8FA5B2007CC982 /* Exceptions for "AdventureLogger" folder in "AdventureLogger" target */,
 			);
 			path = AdventureLogger;
+			sourceTree = "<group>";
+		};
+		893F8F902E9FB12100BB4BFD /* AdventureLoggerWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				893F8FA42E9FB12D00BB4BFD /* Exceptions for "AdventureLoggerWidget" folder in "AdventureLoggerWidgetExtension" target */,
+			);
+			path = AdventureLoggerWidget;
+			sourceTree = "<group>";
+		};
+		89BC1B322EA10836001D4AC3 /* AdventureLoggerShareExtension */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				89BC1B3F2EA10836001D4AC3 /* Exceptions for "AdventureLoggerShareExtension" folder in "AdventureLoggerShareExtension" target */,
+			);
+			path = AdventureLoggerShareExtension;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -44,13 +115,33 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		893F8F872E9FB12100BB4BFD /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				893F8F8F2E9FB12100BB4BFD /* SwiftUI.framework in Frameworks */,
+				893F8F8D2E9FB12100BB4BFD /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		89BC1B2E2EA10836001D4AC3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
 		628E937C2E8FA5B1007CC982 = {
 			isa = PBXGroup;
 			children = (
+				890E97DE2E9FC69600EC5013 /* AdventureLoggerWidgetExtension.entitlements */,
 				628E93872E8FA5B1007CC982 /* AdventureLogger */,
+				893F8F902E9FB12100BB4BFD /* AdventureLoggerWidget */,
+				89BC1B322EA10836001D4AC3 /* AdventureLoggerShareExtension */,
+				893F8F8B2E9FB12100BB4BFD /* Frameworks */,
 				628E93862E8FA5B1007CC982 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -59,8 +150,19 @@
 			isa = PBXGroup;
 			children = (
 				628E93852E8FA5B1007CC982 /* AdventureLogger.app */,
+				893F8F8A2E9FB12100BB4BFD /* AdventureLoggerWidgetExtension.appex */,
+				89BC1B312EA10836001D4AC3 /* AdventureLoggerShareExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		893F8F8B2E9FB12100BB4BFD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				893F8F8C2E9FB12100BB4BFD /* WidgetKit.framework */,
+				893F8F8E2E9FB12100BB4BFD /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -73,10 +175,13 @@
 				628E93812E8FA5B1007CC982 /* Sources */,
 				628E93822E8FA5B1007CC982 /* Frameworks */,
 				628E93832E8FA5B1007CC982 /* Resources */,
+				893F8FA52E9FB12D00BB4BFD /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				893F8F9F2E9FB12D00BB4BFD /* PBXTargetDependency */,
+				89BC1B3A2EA10836001D4AC3 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				628E93872E8FA5B1007CC982 /* AdventureLogger */,
@@ -89,6 +194,50 @@
 			productReference = 628E93852E8FA5B1007CC982 /* AdventureLogger.app */;
 			productType = "com.apple.product-type.application";
 		};
+		893F8F892E9FB12100BB4BFD /* AdventureLoggerWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 893F8FA12E9FB12D00BB4BFD /* Build configuration list for PBXNativeTarget "AdventureLoggerWidgetExtension" */;
+			buildPhases = (
+				893F8F862E9FB12100BB4BFD /* Sources */,
+				893F8F872E9FB12100BB4BFD /* Frameworks */,
+				893F8F882E9FB12100BB4BFD /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				893F8F902E9FB12100BB4BFD /* AdventureLoggerWidget */,
+			);
+			name = AdventureLoggerWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = AdventureLoggerWidgetExtension;
+			productReference = 893F8F8A2E9FB12100BB4BFD /* AdventureLoggerWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		89BC1B302EA10836001D4AC3 /* AdventureLoggerShareExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 89BC1B3E2EA10836001D4AC3 /* Build configuration list for PBXNativeTarget "AdventureLoggerShareExtension" */;
+			buildPhases = (
+				89BC1B2D2EA10836001D4AC3 /* Sources */,
+				89BC1B2E2EA10836001D4AC3 /* Frameworks */,
+				89BC1B2F2EA10836001D4AC3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				89BC1B322EA10836001D4AC3 /* AdventureLoggerShareExtension */,
+			);
+			name = AdventureLoggerShareExtension;
+			packageProductDependencies = (
+			);
+			productName = AdventureLoggerShareExtension;
+			productReference = 89BC1B312EA10836001D4AC3 /* AdventureLoggerShareExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -96,11 +245,17 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2600;
+				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					628E93842E8FA5B1007CC982 = {
 						CreatedOnToolsVersion = 26.0.1;
+					};
+					893F8F892E9FB12100BB4BFD = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					89BC1B302EA10836001D4AC3 = {
+						CreatedOnToolsVersion = 16.4;
 					};
 				};
 			};
@@ -122,12 +277,28 @@
 			projectRoot = "";
 			targets = (
 				628E93842E8FA5B1007CC982 /* AdventureLogger */,
+				893F8F892E9FB12100BB4BFD /* AdventureLoggerWidgetExtension */,
+				89BC1B302EA10836001D4AC3 /* AdventureLoggerShareExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		628E93832E8FA5B1007CC982 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		893F8F882E9FB12100BB4BFD /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		89BC1B2F2EA10836001D4AC3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -144,7 +315,34 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		893F8F862E9FB12100BB4BFD /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		89BC1B2D2EA10836001D4AC3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		893F8F9F2E9FB12D00BB4BFD /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 893F8F892E9FB12100BB4BFD /* AdventureLoggerWidgetExtension */;
+			targetProxy = 893F8F9E2E9FB12D00BB4BFD /* PBXContainerItemProxy */;
+		};
+		89BC1B3A2EA10836001D4AC3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 89BC1B302EA10836001D4AC3 /* AdventureLoggerShareExtension */;
+			targetProxy = 89BC1B392EA10836001D4AC3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		628E93972E8FA5B2007CC982 /* Debug */ = {
@@ -152,9 +350,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = AdventureLogger/AdventureLogger.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3YGS927W55;
+				DEVELOPMENT_TEAM = 8YPHK9356F;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -179,7 +378,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Smahomed04.AdventureLogger;
+				PRODUCT_BUNDLE_IDENTIFIER = shaiyankhan.AdventureLogger;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -200,9 +399,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = AdventureLogger/AdventureLogger.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3YGS927W55;
+				DEVELOPMENT_TEAM = 8YPHK9356F;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -227,7 +427,7 @@
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 15.6;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = Smahomed04.AdventureLogger;
+				PRODUCT_BUNDLE_IDENTIFIER = shaiyankhan.AdventureLogger;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
@@ -359,6 +559,124 @@
 			};
 			name = Release;
 		};
+		893F8FA22E9FB12D00BB4BFD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = AdventureLoggerWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8YPHK9356F;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AdventureLoggerWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AdventureLoggerWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = shaiyankhan.AdventureLogger.AdventureLoggerWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		893F8FA32E9FB12D00BB4BFD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = AdventureLoggerWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8YPHK9356F;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AdventureLoggerWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AdventureLoggerWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = shaiyankhan.AdventureLogger.AdventureLoggerWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		89BC1B3C2EA10836001D4AC3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AdventureLoggerShareExtension/AdventureLoggerShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8YPHK9356F;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AdventureLoggerShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AdventureLoggerShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = shaiyankhan.AdventureLogger.AdventureLoggerShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		89BC1B3D2EA10836001D4AC3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = AdventureLoggerShareExtension/AdventureLoggerShareExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 8YPHK9356F;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AdventureLoggerShareExtension/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AdventureLoggerShareExtension;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = shaiyankhan.AdventureLogger.AdventureLoggerShareExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -376,6 +694,24 @@
 			buildConfigurations = (
 				628E93972E8FA5B2007CC982 /* Debug */,
 				628E93982E8FA5B2007CC982 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		893F8FA12E9FB12D00BB4BFD /* Build configuration list for PBXNativeTarget "AdventureLoggerWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				893F8FA22E9FB12D00BB4BFD /* Debug */,
+				893F8FA32E9FB12D00BB4BFD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		89BC1B3E2EA10836001D4AC3 /* Build configuration list for PBXNativeTarget "AdventureLoggerShareExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				89BC1B3C2EA10836001D4AC3 /* Debug */,
+				89BC1B3D2EA10836001D4AC3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
