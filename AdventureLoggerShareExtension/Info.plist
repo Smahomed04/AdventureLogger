@@ -10,14 +10,6 @@
 		<string>$(PRODUCT_MODULE_NAME).ShareViewController</string>
 		<key>NSExtensionAttributes</key>
 		<dict>
-			<key>NSExtensionActivationSupportsImageWithMaxCount</key>
-			<integer>5</integer>
-			<key>NSExtensionActivationSupportsWebURLWithMaxCount</key>
-			<integer>5</integer>
-			<key>NSExtensionActivationSupportsText</key>
-			<true/>
-			<key>NSExtensionActivationSupportsAttachmentsWithMaxCount</key>
-			<integer>5</integer>
 			<key>NSExtensionActivationRule</key>
 			<string>TRUEPREDICATE</string>
 		</dict>

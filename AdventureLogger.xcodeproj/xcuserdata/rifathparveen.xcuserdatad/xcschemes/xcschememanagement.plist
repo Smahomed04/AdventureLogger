@@ -7,17 +7,35 @@
 		<key>AdventureLogger.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>0</integer>
+			<integer>2</integer>
 		</dict>
 		<key>AdventureLoggerShareExtension.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>2</integer>
+			<integer>0</integer>
 		</dict>
 		<key>AdventureLoggerWidgetExtension.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>1</integer>
+		</dict>
+	</dict>
+	<key>SuppressBuildableAutocreation</key>
+	<dict>
+		<key>628E93842E8FA5B1007CC982</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>893F8F892E9FB12100BB4BFD</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>89BC1B302EA10836001D4AC3</key>
+		<dict>
+			<key>primary</key>
+			<true/>
 		</dict>
 	</dict>
 </dict>
